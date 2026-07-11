@@ -1,5 +1,9 @@
 bench,quantity,point,conv_ci_lo,conv_ci_hi
-stagec-frozen,true_accept,0.8707,0.7949,0.9388
-stagec-frozen,false_accept,0.4352,0.3727,0.4972
-fresh-20260715,true_accept,0.8917,0.8279,0.9466
-fresh-20260715,false_accept,0.4818,0.4128,0.5520
+stagec-frozen,true_accept_conv,0.8707,0.7949,0.9388
+stagec-frozen,false_accept_conv,0.4352,0.3727,0.4972
+stagec-frozen,true_accept_fact,0.8707,0.7868,0.9483
+stagec-frozen,false_accept_fact,0.4352,0.3545,0.5330
+fresh-20260715,true_accept_conv,0.8917,0.8279,0.9466
+fresh-20260715,false_accept_conv,0.4818,0.4128,0.5520
+fresh-20260715,true_accept_fact,0.8917,0.8095,0.9565
+fresh-20260715,false_accept_fact,0.4818,0.4009,0.5659

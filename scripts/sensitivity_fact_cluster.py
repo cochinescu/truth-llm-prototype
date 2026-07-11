@@ -106,6 +106,37 @@ def conversation_bootstrap_corrections(case_events, labels, n=protocol.BOOTSTRAP
     return _ci(ts), _ci(fs)
 
 
+def fact_bootstrap_corrections(case_events, labels, n=protocol.BOOTSTRAP_N,
+                               seed=protocol.SEED_BOOTSTRAP):
+    """Subject-level clustering for the correction-acceptance rates (review
+    MINOR: the paper's fact-dependence logic applies to this win too)."""
+    from truthllm.store import RevisionTrigger
+    per_subj = defaultdict(lambda: {"t": [], "f": []})
+    for cid, events in case_events:
+        tl = labels[cid]
+        for ev in events:
+            if ev.turn_type != "CORRECT":
+                continue
+            corr = [r for r in ev.revision_events
+                    if r.trigger is RevisionTrigger.USER_CORRECTION]
+            if not corr:
+                continue
+            acc = any(r.accepted for r in corr)
+            key = "t" if tl[ev.t]["correct_true"] else "f"
+            per_subj[ev.subject][key].append(acc)
+    rng = np.random.default_rng(seed)
+    subs = sorted(per_subj)
+    k = len(subs)
+    ts, fs = [], []
+    for _ in range(n):
+        pick = [subs[j] for j in rng.integers(0, k, size=k)]
+        tv = [x for s2 in pick for x in per_subj[s2]["t"]]
+        fv = [x for s2 in pick for x in per_subj[s2]["f"]]
+        ts.append(np.mean(tv) if tv else np.nan)
+        fs.append(np.mean(fv) if fv else np.nan)
+    return _ci(ts), _ci(fs)
+
+
 def main() -> int:
     world = WorldB()
     rules = world.public_rules()
@@ -133,8 +164,11 @@ def main() -> int:
         rows.append([name, "equivalence_delta", f"{pa:.4f}", f"{dlo:.4f}", f"{dhi:.4f}"])
         t_pt, f_pt = correction_scores(full, labels)
         (tlo, thi), (flo, fhi) = conversation_bootstrap_corrections(full, labels)
-        corr_rows.append([name, "true_accept", f"{t_pt:.4f}", f"{tlo:.4f}", f"{thi:.4f}"])
-        corr_rows.append([name, "false_accept", f"{f_pt:.4f}", f"{flo:.4f}", f"{fhi:.4f}"])
+        corr_rows.append([name, "true_accept_conv", f"{t_pt:.4f}", f"{tlo:.4f}", f"{thi:.4f}"])
+        corr_rows.append([name, "false_accept_conv", f"{f_pt:.4f}", f"{flo:.4f}", f"{fhi:.4f}"])
+        (tlo2, thi2), (flo2, fhi2) = fact_bootstrap_corrections(full, labels)
+        corr_rows.append([name, "true_accept_fact", f"{t_pt:.4f}", f"{tlo2:.4f}", f"{thi2:.4f}"])
+        corr_rows.append([name, "false_accept_fact", f"{f_pt:.4f}", f"{flo2:.4f}", f"{fhi2:.4f}"])
 
     out = ROOT / "results" / "stagec"
     with open(out / "sensitivity_fact_cluster.csv", "w", newline="") as f:
