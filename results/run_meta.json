@@ -1,10 +1,10 @@
 {
   "master_seed": 20260711,
-  "quick": true,
-  "n_cases": 20,
+  "quick": false,
+  "n_cases": 120,
   "benchmark": "benchmark/v1.0 (frozen, sha-verified, seed 20260712)",
-  "bootstrap_n": 200,
-  "overhead_iters": 50,
+  "bootstrap_n": 2000,
+  "overhead_iters": 200,
   "extractor_modes": [
     "combined",
     "signal",
@@ -103,6 +103,6 @@
     "BOOTSTRAP_N": 2000,
     "OVERHEAD_ITERS": 200
   },
-  "generated_utc": "2026-07-11T08:55:19+00:00",
-  "wall_seconds": 1.34
+  "generated_utc": "2026-07-11T09:12:35+00:00",
+  "wall_seconds": 72.5
 }

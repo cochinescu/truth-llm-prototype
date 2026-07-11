@@ -104,6 +104,19 @@ policy scores as calibrated whenever corpus accuracy sits near its anchor), not
 tuned against arm outcomes; its margin is anchored to the chance value 0.5,
 which every single-category policy attains by construction.
 
+**Ordering record (FROZEN, for inspectability):** the metric definition and the
+0.60 / +0.05 / both-extractors margin were written into this file and into
+`truthllm/metrics.py` BEFORE `expression_auc` was computed on any arm (the
+scoring code and this section land in the same commit as the re-scored results,
+so the within-session ordering is attested here rather than by commit
+separation). Full disclosure: during the ECE failure analysis a coarse
+bin-based reading of the FULL arm's combined reliability bins had been made
+(suggesting combined discrimination roughly in the 0.6--0.7 range); no
+per-extractor, per-control, or threshold-only AUC existed or was estimable
+before the freeze, and the per-extractor robustness requirement — the clause
+the amended check ultimately FAILS — was frozen without any per-extractor
+information.
+
 | item | status | value |
 |---|---|---|
 | amended manipulation check | FROZEN | expression-discrimination AUC: P(rank(category of a correct expressed claim) > rank(incorrect)), ties ½; category ranks HEDGE_LOW < HEDGE_HIGH < ASSERT; DECLINEs excluded (coverage) |

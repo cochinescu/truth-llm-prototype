@@ -1,4 +1,4 @@
 config,median_ms,ci_lo,ci_hi
-full_layer,0.2212,0.2101,0.2459
-bare_baseline,0.0040,0.0038,0.0063
-added_per_conversation,0.2172,,
+full_layer,0.2250,0.2115,0.3550
+bare_baseline,0.0039,0.0037,0.0041
+added_per_conversation,0.2211,,

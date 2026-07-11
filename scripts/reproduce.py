@@ -73,6 +73,8 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--seed", type=int, default=protocol.MASTER_SEED)
     ap.add_argument("--quick", action="store_true")
+    ap.add_argument("--outdir", default=str(ROOT / "results"),
+                    help="output directory (tests pass a temp dir; default results/)")
     args = ap.parse_args()
 
     boot_n = 200 if args.quick else protocol.BOOTSTRAP_N
@@ -80,8 +82,8 @@ def main() -> int:
 
     t_start = time.perf_counter()
     world, model, docs, instances, labels, runs, benchmark_src = run_all(args.seed, args.quick)
-    results = ROOT / "results"
-    results.mkdir(exist_ok=True)
+    results = Path(args.outdir)
+    results.mkdir(parents=True, exist_ok=True)
     (results / "events").mkdir(exist_ok=True)
 
     # --- fidelity.csv + fidelity_bins.csv (C2) --------------------------------

@@ -12,12 +12,14 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 @pytest.fixture(scope="module")
-def quick_run():
+def quick_run(tmp_path_factory):
+    outdir = tmp_path_factory.mktemp("results-quick")
     r = subprocess.run(
-        [sys.executable, str(ROOT / "scripts" / "reproduce.py"), "--quick"],
+        [sys.executable, str(ROOT / "scripts" / "reproduce.py"), "--quick",
+         "--outdir", str(outdir)],
         capture_output=True, text=True, cwd=ROOT)
     assert r.returncode == 0, r.stderr[-2000:]
-    return ROOT / "results"
+    return outdir
 
 
 def _csv(path):
@@ -72,7 +74,8 @@ def test_rerun_byte_identical_csvs(quick_run):
                        if p.name != "overhead.csv"}
     before = logical()
     r = subprocess.run(
-        [sys.executable, str(ROOT / "scripts" / "reproduce.py"), "--quick"],
+        [sys.executable, str(ROOT / "scripts" / "reproduce.py"), "--quick",
+         "--outdir", str(quick_run)],
         capture_output=True, text=True, cwd=ROOT)
     assert r.returncode == 0, r.stderr[-2000:]
     assert before == logical()
