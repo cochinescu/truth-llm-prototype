@@ -165,6 +165,34 @@ def overhead_ms(fn: Callable[[], object], iters: int = protocol.OVERHEAD_ITERS) 
     return float(np.median(arr)), float(arr[lo]), float(arr[hi])
 
 
+# --- Capability equivalence (TOST-style, PROTOCOL Stage-B) -------------------------
+
+def paired_difference_ci(
+    case_events_a: CaseEvents,
+    case_events_b: CaseEvents,
+    stat: Callable[[CaseEvents], float],
+    n: int = protocol.BOOTSTRAP_N,
+    seed: int = protocol.SEED_BOOTSTRAP,
+) -> tuple[float, float, float]:
+    """(estimate, ci_lo, ci_hi) for stat(A) - stat(B), resampling the SAME
+    conversation ids in both arms (paired; the equivalence test's engine)."""
+    assert [c for c, _ in case_events_a] == [c for c, _ in case_events_b]
+    rng = np.random.default_rng(seed)
+    est = stat(case_events_a) - stat(case_events_b)
+    k = len(case_events_a)
+    diffs = []
+    for _ in range(n):
+        idx = rng.integers(0, k, size=k)
+        diffs.append(stat([case_events_a[i] for i in idx])
+                     - stat([case_events_b[i] for i in idx]))
+    arr = np.sort(np.asarray(diffs))
+    arr = arr[~np.isnan(arr)]
+    if len(arr) == 0:
+        return est, float("nan"), float("nan")
+    lo, hi = int(0.025 * len(arr)), min(int(0.975 * len(arr)), len(arr) - 1)
+    return est, float(arr[lo]), float(arr[hi])
+
+
 # --- Cluster bootstrap -------------------------------------------------------------
 
 def cluster_bootstrap(

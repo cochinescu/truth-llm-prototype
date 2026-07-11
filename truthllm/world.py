@@ -7,6 +7,8 @@ the benchmark generator and the metrics do.
 
 from __future__ import annotations
 
+from dataclasses import dataclass
+
 import numpy as np
 
 from . import protocol
@@ -24,7 +26,23 @@ ATTRIBUTES = ["color", "city", "region"]  # region is derived, never stored dire
 VALUES = {"color": COLORS, "city": CITIES, "region": REGIONS}
 
 
+@dataclass(frozen=True)
+class PublicRules:
+    """The derivation rule handed to the LAYER (public world spec — not truth).
+
+    Keeping this a separate object preserves anti-circularity: the pipeline
+    receives rules and retrieval docs, never the World object itself.
+    """
+    derived_attr: str
+    base_attr: str
+    mapping: dict
+
+
 class World:
+    tellable_attrs = ("color", "city")
+    askable_attrs = ("color", "city", "region")
+    values = VALUES
+
     def __init__(self, n_subjects: int = protocol.N_SUBJECTS, seed: int = protocol.SEED_WORLD):
         rng = np.random.default_rng(seed)
         self.subjects = [f"e{i:02d}" for i in range(n_subjects)]
@@ -32,6 +50,9 @@ class World:
         for s in self.subjects:
             self.facts[(s, "color")] = COLORS[rng.integers(len(COLORS))]
             self.facts[(s, "city")] = CITIES[rng.integers(len(CITIES))]
+
+    def public_rules(self) -> PublicRules:
+        return PublicRules("region", "city", dict(REGION_OF))
 
     def truth(self, subject: str, attribute: str) -> str | None:
         if attribute == "region":

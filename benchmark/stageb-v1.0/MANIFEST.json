@@ -1,0 +1,25 @@
+{
+  "benchmarkVersion": "stageb-v1.0",
+  "nCases": 120,
+  "params": {
+    "correct_true_rate": 0.5,
+    "n_sessions": 3,
+    "n_subjects": 60,
+    "tell_true_rate": 0.5,
+    "turn_mix": {
+      "ASK": 0.5,
+      "CORRECT": 0.15,
+      "REASK": 0.15,
+      "TELL": 0.2
+    },
+    "turns_per_session": 8
+  },
+  "schemaVersion": "1.0",
+  "seed": 20260713,
+  "sha256": {
+    "instances.jsonl": "73c85b24256855a3179ade4fe23ef15b54791df05e1cb47c3bd83ba686b34500",
+    "labels.jsonl": "e54755016602c402a28f57f0e9df44ced7e98201b677864c45e3611b38e30d7f"
+  },
+  "world": "WorldB",
+  "worldSeed": 20260711
+}

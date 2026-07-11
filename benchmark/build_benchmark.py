@@ -21,14 +21,13 @@ import numpy as np
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from truthllm import protocol  # noqa: E402
-from truthllm.world import VALUES, World  # noqa: E402
-
-TELLABLE_ATTRS = ("color", "city")  # region is derived; users assert base facts
-ASKABLE_ATTRS = ("color", "city", "region")
+from truthllm.world import World  # noqa: E402
 
 
 def generate(world: World, n_cases: int = protocol.N_CASES, seed: int = protocol.SEED_BENCHMARK):
     rng = np.random.default_rng(seed)
+    tellable, askable = world.tellable_attrs, world.askable_attrs
+    base_attr = world.public_rules().base_attr
     turn_types = list(protocol.TURN_MIX)
     probs = np.array([protocol.TURN_MIX[t] for t in turn_types])
     instances, labels = [], []
@@ -52,28 +51,28 @@ def generate(world: World, n_cases: int = protocol.N_CASES, seed: int = protocol
 
             if ttype == "ASK":
                 s = world.subjects[rng.integers(len(world.subjects))]
-                a = ASKABLE_ATTRS[rng.integers(len(ASKABLE_ATTRS))]
+                a = askable[rng.integers(len(askable))]
                 turns.append({"t": t, "session": session, "type": "ASK", "subject": s, "attribute": a})
                 turn_labels.append({"truth": world.truth(s, a)})
                 asked.append((t, session, s, a))
 
             elif ttype == "TELL":
                 s = world.subjects[rng.integers(len(world.subjects))]
-                a = TELLABLE_ATTRS[rng.integers(len(TELLABLE_ATTRS))]
+                a = tellable[rng.integers(len(tellable))]
                 truth = world.truth(s, a)
                 tell_true = bool(rng.random() < protocol.TELL_TRUE_RATE)
-                value = truth if tell_true else _wrong(truth, a, rng)
+                value = truth if tell_true else _wrong(truth, a, rng, world)
                 turns.append({"t": t, "session": session, "type": "TELL",
                               "subject": s, "attribute": a, "value": value})
                 turn_labels.append({"truth": truth, "tell_true": tell_true})
 
             elif ttype == "CORRECT":
                 t0, _, s, a = asked[rng.integers(len(asked))]
-                if a == "region":  # corrections target base facts
-                    a = "city"
+                if a not in tellable:  # corrections target base facts
+                    a = base_attr
                 truth = world.truth(s, a)
                 correct_true = bool(rng.random() < protocol.CORRECT_TRUE_RATE)
-                value = truth if correct_true else _wrong(truth, a, rng)
+                value = truth if correct_true else _wrong(truth, a, rng, world)
                 turns.append({"t": t, "session": session, "type": "CORRECT",
                               "subject": s, "attribute": a, "value": value, "targets": t0})
                 turn_labels.append({"truth": truth, "correct_true": correct_true, "targets": t0})
@@ -95,16 +94,16 @@ def generate(world: World, n_cases: int = protocol.N_CASES, seed: int = protocol
     return instances, labels
 
 
-def _wrong(truth: str, attribute: str, rng: np.random.Generator) -> str:
-    others = [v for v in VALUES[attribute] if v != truth]
+def _wrong(truth: str, attribute: str, rng: np.random.Generator, world: World) -> str:
+    others = [v for v in world.values[attribute] if v != truth]
     return others[rng.integers(len(others))]
 
 
-def freeze(version: str = "v1.0") -> Path:
+def freeze(version: str = "v1.0", world: World | None = None, seed: int = protocol.SEED_BENCHMARK) -> Path:
     out = Path(__file__).resolve().parent / version
     out.mkdir(parents=True, exist_ok=True)
-    world = World()
-    instances, labels = generate(world)
+    world = world if world is not None else World()
+    instances, labels = generate(world, seed=seed)
     files = {"instances.jsonl": instances, "labels.jsonl": labels}
     sha = {}
     for name, rows in files.items():
@@ -114,7 +113,8 @@ def freeze(version: str = "v1.0") -> Path:
     manifest = {
         "benchmarkVersion": version.lstrip("v"),
         "schemaVersion": "1.0",
-        "seed": protocol.SEED_BENCHMARK,
+        "seed": seed,
+        "world": type(world).__name__,
         "worldSeed": protocol.SEED_WORLD,
         "nCases": len(instances),
         "params": {

@@ -18,12 +18,11 @@ import numpy as np
 
 from . import protocol
 from .arms import ArmConfig
-from .basemodel import SyntheticBaseModel
 from .expression import ExpressionEvent, acknowledgment_text, express
 from .extractors import extract_all
 from .state import Claim, EpistemicClass, Provenance, assign_state
 from .store import BeliefStore, RevisionEvent
-from .world import REGION_OF
+from .world import PublicRules
 
 
 @dataclass
@@ -49,8 +48,9 @@ def _resolve(
     attribute: str,
     cfg: ArmConfig,
     store: BeliefStore | None,
-    model: SyntheticBaseModel,
+    model,
     docs: dict[tuple[str, str], str],
+    rules: PublicRules,
     rng: np.random.Generator,
     t: int,
     events_out: list[RevisionEvent],
@@ -71,7 +71,9 @@ def _resolve(
     # 2. parametric
     answer = model.query(subject, attribute)
     if answer is not None:
-        conf = extract_all(model, subject, attribute, answer, rng)
+        extract = getattr(model, "extract", None)  # Stage-B adapters supply their own
+        conf = (extract(subject, attribute, answer, rng) if extract
+                else extract_all(model, subject, attribute, answer, rng))
         if _EXTRACTOR_MODE[0] != "combined":
             conf = {_EXTRACTOR_MODE[0]: conf[_EXTRACTOR_MODE[0]]}
         claim = Claim(subject, attribute, answer.value, Provenance.PARAMETRIC, conf)
@@ -83,12 +85,13 @@ def _resolve(
     # 3. retrieval
     if (subject, attribute) in docs and rng.random() < protocol.RETRIEVAL_RATE:
         return _retrieved_claim(subject, attribute, docs), "retrieval"
-    # 4. inference: region via the public rule (one level, city resolved first)
-    if attribute == "region" and depth == 0:
-        city_claim, _ = _resolve(subject, "city", cfg, store, model, docs, rng, t, events_out, depth=1)
-        if city_claim is not None and city_claim.value in REGION_OF:
-            return Claim(subject, "region", REGION_OF[city_claim.value], Provenance.INFERRED,
-                         dict(city_claim.confidence)), "inference"
+    # 4. inference: derived attribute via the public rule (one level, base first)
+    if attribute == rules.derived_attr and depth == 0:
+        base_claim, _ = _resolve(subject, rules.base_attr, cfg, store, model, docs,
+                                 rules, rng, t, events_out, depth=1)
+        if base_claim is not None and base_claim.value in rules.mapping:
+            return Claim(subject, rules.derived_attr, rules.mapping[base_claim.value],
+                         Provenance.INFERRED, dict(base_claim.confidence)), "inference"
     return None, None
 
 
@@ -106,12 +109,16 @@ _EXTRACTOR_MODE = ["combined"]
 def run_conversation(
     script: dict,
     cfg: ArmConfig,
-    model: SyntheticBaseModel,
+    model,
     docs: dict[tuple[str, str], str],
     rng: np.random.Generator,
     extractor_mode: str = "combined",
+    rules: PublicRules | None = None,
 ) -> list[TurnEvent]:
     _EXTRACTOR_MODE[0] = extractor_mode
+    if rules is None:  # Stage-A default: the synthetic world's city->region rule
+        from .world import REGION_OF
+        rules = PublicRules("region", "city", dict(REGION_OF))
     store = BeliefStore() if cfg.store else None
     events: list[TurnEvent] = []
     for turn in script["turns"]:
@@ -121,7 +128,7 @@ def run_conversation(
 
         if ttype in ("ASK", "REASK"):
             revs: list[RevisionEvent] = []
-            claim, path = _resolve(s, a, cfg, store, model, docs, rng, t, revs)
+            claim, path = _resolve(s, a, cfg, store, model, docs, rules, rng, t, revs)
             ev.revision_events = revs
             state = assign_state(claim)
             expr: ExpressionEvent = express(claim, state, cfg.gating, cfg.three_state)

@@ -68,8 +68,27 @@ errors out on mismatch.
 | capability equivalence (TOST) margins | TBD | Stage B only; Stage A reports accuracy + coverage descriptively |
 | overhead measurement | FROZEN (method) | median + 95% CI over ≥200 iterations; Stage-A number is layer-over-stub cost only |
 
-## Stage-B gate (all TBD)
+## Stage-B freeze pass (2026-07-11 — recorded BEFORE the Stage-B grid ran)
 
-Pinned base model + weights hash; decoding parameters; real logit extractor
-config; margins and power; PROVISIONAL freeze pass over this file with revision
-notes. C5 hand-off conditions evaluate ONLY against Stage-B numbers.
+| item | status | value |
+|---|---|---|
+| base model | FROZEN | `Qwen/Qwen2.5-0.5B-Instruct` (HF); revision hash recorded in `results/stageb/model_cache.json` meta at load; single model (R6 scoped: no second model this pass) |
+| decoding | FROZEN | greedy for answers, max 12 new tokens; system prompt fixes "name only / say unknown" |
+| extractors (Stage B) | FROZEN | `logit` = mean token probability of the generated answer; `consistency` = agreement of k temperature samples (T=1.0, top-p 0.95) with the greedy answer; combination rule stays min (D1) |
+| k samples | FROZEN | 8 — **revision note:** Stage-A PROVISIONAL was 15; reduced for compute before the grid, per the legend |
+| world (Stage B) | FROZEN | real geography facts (`truthllm/worldb.py`): 60 countries → capital (parametric), continent derived via public capital→continent rule; ambiguous capitals excluded by construction |
+| benchmark (Stage B) | FROZEN | `benchmark/stageb-v1.0/` generated from WorldB with seed MASTER+2, hash-frozen BEFORE the grid; same case shape/turn mix as Stage A |
+| answer normalization | FROZEN | lowercase, de-accent, strip punctuation/leading "the", snap to known capital by containment; decline markers → no candidate. Normalization never consults world truth |
+| N cases | FROZEN | 120 (power note: Stage-A cluster-bootstrap 95% CI half-widths at 120 cases were ≈±0.02–0.03 on rates — sufficient to resolve the margins below) |
+| C2 margin | FROZEN | ECE_full ≤ ECE_control − 0.02 for BOTH controls (uniform, always-hedged) under BOTH extractors |
+| C3 margin | FROZEN | contradiction(stateless) − contradiction(each store arm) ≥ 0.03; ack audit = 100%; false-accept ≤ true-accept − 0.10 |
+| C4 margin | FROZEN | confidently-false(no_provenance) − confidently-false(full) ≥ 0.02; coverage cost reported |
+| capability equivalence | FROZEN | TOST-style: 95% cluster-bootstrap CI of per-conversation Δ(answer-when-given accuracy, full − uniform) within ±0.05 → equivalent; coverage reported separately (never folded into the equivalence test) |
+| Stage-A PROVISIONAL values | FROZEN as-is | bands 0.40/0.75; floor 0.15; θ_accept 0.75; CORRECTION/TOLD/RETRIEVED conf 0.85/0.60/0.80; benchmark shape/mix; retrieval 0.5/0.1/0.5 — no revisions needed after Stage A |
+| model cache | FROZEN (mechanism) | per-fact answers/confidences computed once, written to `results/stageb/model_cache.json`; the grid reads only the cache (rerun determinism) |
+
+C5 hand-off conditions evaluate ONLY against Stage-B numbers: IF C2 margin met
+(manipulation check) AND capability equivalence holds, the condition pair
+(full vs threshold_only/uniform ablations, configs + outputs in the archive) is
+delivered for Paper 5; otherwise the paper says so and the Paper-5 truth arm
+stays blocked (no post-hoc relabeling).

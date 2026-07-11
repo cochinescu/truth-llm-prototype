@@ -1,0 +1,4 @@
+config,median_ms,ci_lo,ci_hi
+full_layer_machinery,0.0769,0.0750,0.0797
+cached_lookup_baseline,0.0049,0.0048,0.0052
+"model_query_median_ms(one-time,from_cache_build)",106.6,,

@@ -33,8 +33,9 @@ def make_figures(results: Path) -> None:
 
 def _fig1_reliability(results: Path) -> None:
     rows = _read(results / "fidelity_bins.csv")
+    modes = sorted({r["extractor_mode"] for r in rows} - {"combined"})[:2]
     fig, axes = plt.subplots(1, 2, figsize=(9, 4), sharey=True)
-    for ax, mode in zip(axes, ["signal", "consistency"]):
+    for ax, mode in zip(axes, modes):
         ax.plot([0, 1], [0, 1], "k--", lw=0.8, label="perfect fidelity")
         for arm in ["full", "uniform", "always_hedged"]:
             pts = sorted(

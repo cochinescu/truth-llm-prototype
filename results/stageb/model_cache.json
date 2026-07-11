@@ -1,0 +1,377 @@
+{
+ "cache": {
+  "France": {
+   "value": "Paris",
+   "raw": "Paris",
+   "logit": 0.983366847038269,
+   "consistency": 1.0
+  },
+  "Japan": {
+   "value": "Tokyo",
+   "raw": "Tokyo",
+   "logit": 0.986555298169454,
+   "consistency": 1.0
+  },
+  "Italy": {
+   "value": "florence",
+   "raw": "Florence",
+   "logit": 0.7925220529238383,
+   "consistency": 0.625
+  },
+  "Spain": {
+   "value": "Madrid",
+   "raw": "Madrid",
+   "logit": 0.940908948580424,
+   "consistency": 0.875
+  },
+  "Germany": {
+   "value": "Berlin",
+   "raw": "Berlin",
+   "logit": 0.9836402237415314,
+   "consistency": 1.0
+  },
+  "Russia": {
+   "value": "Moscow",
+   "raw": "Moscow",
+   "logit": 0.9813979268074036,
+   "consistency": 1.0
+  },
+  "China": {
+   "value": "Beijing",
+   "raw": "Beijing",
+   "logit": 0.9578155279159546,
+   "consistency": 1.0
+  },
+  "Egypt": {
+   "value": "Cairo",
+   "raw": "Cairo",
+   "logit": 0.766262153784434,
+   "consistency": 0.5
+  },
+  "Greece": {
+   "value": "Athens",
+   "raw": "Athens",
+   "logit": 0.9780591328938802,
+   "consistency": 1.0
+  },
+  "Portugal": {
+   "value": "porto",
+   "raw": "Porto",
+   "logit": 0.7101032435894012,
+   "consistency": 0.25
+  },
+  "Austria": {
+   "value": "Vienna",
+   "raw": "Vienna",
+   "logit": 0.9594715436299642,
+   "consistency": 0.875
+  },
+  "Norway": {
+   "value": "Oslo",
+   "raw": "Oslo",
+   "logit": 0.9263733625411987,
+   "consistency": 0.625
+  },
+  "Sweden": {
+   "value": "Stockholm",
+   "raw": "Stockholm",
+   "logit": 0.9774206678072611,
+   "consistency": 1.0
+  },
+  "Finland": {
+   "value": "Helsinki",
+   "raw": "Helsinki",
+   "logit": 0.8314198652903239,
+   "consistency": 0.375
+  },
+  "Ireland": {
+   "value": "Dublin",
+   "raw": "Dublin",
+   "logit": 0.9467384616533915,
+   "consistency": 0.875
+  },
+  "Canada": {
+   "value": "Ottawa",
+   "raw": "Ottawa",
+   "logit": 0.8249910548329353,
+   "consistency": 0.75
+  },
+  "Australia": {
+   "value": "sydney",
+   "raw": "Sydney",
+   "logit": 0.8237786789735159,
+   "consistency": 0.625
+  },
+  "Turkey": {
+   "value": "Ankara",
+   "raw": "Ankara",
+   "logit": 0.660004734992981,
+   "consistency": 0.625
+  },
+  "Switzerland": {
+   "value": "Bern",
+   "raw": "Bern",
+   "logit": 0.9021523296833038,
+   "consistency": 0.75
+  },
+  "Brazil": {
+   "value": "Brasilia",
+   "raw": "Bras\u00edlia",
+   "logit": 0.8716003149747849,
+   "consistency": 1.0
+  },
+  "Morocco": {
+   "value": "marrakesh",
+   "raw": "Marrakesh",
+   "logit": 0.7008601307868958,
+   "consistency": 0.125
+  },
+  "Nigeria": {
+   "value": "ibadan",
+   "raw": "Ibadan",
+   "logit": 0.6428371891379356,
+   "consistency": 0.125
+  },
+  "Kenya": {
+   "value": "kampala",
+   "raw": "Kampala",
+   "logit": 0.750797875225544,
+   "consistency": 0.5
+  },
+  "Ethiopia": {
+   "value": "Addis Ababa",
+   "raw": "Addis Ababa",
+   "logit": 0.986937654018402,
+   "consistency": 1.0
+  },
+  "Vietnam": {
+   "value": "Hanoi",
+   "raw": "Hanoi",
+   "logit": 0.9433019161224365,
+   "consistency": 0.75
+  },
+  "Thailand": {
+   "value": "Bangkok",
+   "raw": "Thailand's capital city is Bangkok.",
+   "logit": 0.8370253609286414,
+   "consistency": 0.875
+  },
+  "Indonesia": {
+   "value": "Jakarta",
+   "raw": "Jakarta",
+   "logit": 0.9741479158401489,
+   "consistency": 0.875
+  },
+  "Philippines": {
+   "value": "Manila",
+   "raw": "Manila",
+   "logit": 0.7185421288013458,
+   "consistency": 0.875
+  },
+  "Pakistan": {
+   "value": "Islamabad",
+   "raw": "Islamabad",
+   "logit": 0.9326510628064474,
+   "consistency": 0.875
+  },
+  "Iran": {
+   "value": "Tehran",
+   "raw": "Tehran",
+   "logit": 0.5955309718847275,
+   "consistency": 0.625
+  },
+  "Iraq": {
+   "value": "Baghdad",
+   "raw": "Baghdad",
+   "logit": 0.8111410439014435,
+   "consistency": 0.625
+  },
+  "Syria": {
+   "value": "Damascus",
+   "raw": "Damascus",
+   "logit": 0.8384749889373779,
+   "consistency": 1.0
+  },
+  "Jordan": {
+   "value": "Amman",
+   "raw": "Amman",
+   "logit": 0.9480017820994059,
+   "consistency": 1.0
+  },
+  "Lebanon": {
+   "value": "Beirut",
+   "raw": "Lebanon's capital is Beirut.",
+   "logit": 0.8511057098706564,
+   "consistency": 0.25
+  },
+  "Cuba": {
+   "value": "Havana",
+   "raw": "Cuba's capital is Havana.",
+   "logit": 0.8774535581469536,
+   "consistency": 0.75
+  },
+  "Peru": {
+   "value": "Lima",
+   "raw": "Lima",
+   "logit": 0.8436304728190104,
+   "consistency": 1.0
+  },
+  "Chile": {
+   "value": "Santiago",
+   "raw": "Santiago",
+   "logit": 0.9393477837244669,
+   "consistency": 1.0
+  },
+  "Colombia": {
+   "value": "Bogota",
+   "raw": "Bogot\u00e1",
+   "logit": 0.7875953197479248,
+   "consistency": 0.25
+  },
+  "Venezuela": {
+   "value": "Caracas",
+   "raw": "Caracas",
+   "logit": 0.9786188801129659,
+   "consistency": 1.0
+  },
+  "Uruguay": {
+   "value": "Montevideo",
+   "raw": "Montevideo",
+   "logit": 0.8843331187963486,
+   "consistency": 0.625
+  },
+  "Paraguay": {
+   "value": "as an ai language model i don t have access to",
+   "raw": "As an AI language model, I don't have access to",
+   "logit": 0.7918163190285364,
+   "consistency": 0.125
+  },
+  "Ecuador": {
+   "value": "Quito",
+   "raw": "Quito",
+   "logit": 0.7728083531061808,
+   "consistency": 0.75
+  },
+  "Ghana": {
+   "value": "Accra",
+   "raw": "Accra",
+   "logit": 0.8426418900489807,
+   "consistency": 0.625
+  },
+  "Senegal": {
+   "value": "Dakar",
+   "raw": "Dakar",
+   "logit": 0.7543150087197622,
+   "consistency": 0.75
+  },
+  "Tunisia": {
+   "value": "Tunis",
+   "raw": "Tunis",
+   "logit": 0.817522831261158,
+   "consistency": 1.0
+  },
+  "Myanmar": {
+   "value": "Naypyidaw",
+   "raw": "Yangon (formerly known as Naypyidaw)",
+   "logit": 0.6998257723947366,
+   "consistency": 0.25
+  },
+  "Tanzania": {
+   "value": "kigali",
+   "raw": "Kigali",
+   "logit": 0.7510807514190674,
+   "consistency": 0.375
+  },
+  "Ivory Coast": {
+   "value": "lome",
+   "raw": "Lom\u00e9",
+   "logit": 0.5730844140052795,
+   "consistency": 0.0
+  },
+  "Kazakhstan": {
+   "value": "almaty",
+   "raw": "Almaty",
+   "logit": 0.8782082200050354,
+   "consistency": 0.625
+  },
+  "Burundi": {
+   "value": "bujumbura",
+   "raw": "Bujumbura",
+   "logit": 0.9354949474334717,
+   "consistency": 0.75
+  },
+  "Bhutan": {
+   "value": "Thimphu",
+   "raw": "Thimphu",
+   "logit": 0.8191285729408264,
+   "consistency": 0.5
+  },
+  "Comoros": {
+   "value": "Mbabane",
+   "raw": "Mbabane",
+   "logit": 0.7982759699225426,
+   "consistency": 0.75
+  },
+  "Palau": {
+   "value": "honolulu",
+   "raw": "Honolulu",
+   "logit": 0.7914859851201376,
+   "consistency": 0.625
+  },
+  "Tuvalu": {
+   "value": "honiara",
+   "raw": "Honiara",
+   "logit": 0.4537152275443077,
+   "consistency": 0.125
+  },
+  "Vanuatu": {
+   "value": "Port Vila",
+   "raw": "Port Vila",
+   "logit": 0.748987652361393,
+   "consistency": 0.625
+  },
+  "Lesotho": {
+   "value": "Maseru",
+   "raw": "Maseru",
+   "logit": 0.8201813921332359,
+   "consistency": 0.375
+  },
+  "Eswatini": {
+   "value": "Mbabane",
+   "raw": "Mbabane",
+   "logit": 0.5441204607486725,
+   "consistency": 0.25
+  },
+  "Djibouti": {
+   "value": "Djibouti",
+   "raw": "Djibouti's capital is Djibouti",
+   "logit": 0.8113142972191175,
+   "consistency": 0.75
+  },
+  "Moldova": {
+   "value": "bucharest",
+   "raw": "Bucharest",
+   "logit": 0.8189537972211838,
+   "consistency": 0.5
+  },
+  "Mongolia": {
+   "value": "Ulaanbaatar",
+   "raw": "Ulaanbaatar",
+   "logit": 0.8955818861722946,
+   "consistency": 0.625
+  }
+ },
+ "meta": {
+  "model_id": "Qwen/Qwen2.5-0.5B-Instruct",
+  "revision": "7ae557604adf67be50417f59c2c2f167def9a775",
+  "device": "mps",
+  "seed": 20260711,
+  "k_samples": 8,
+  "temperature": 1.0,
+  "top_p": 0.95,
+  "max_new_tokens": 12,
+  "query_latency_ms_median": 106.59452097024769,
+  "query_latency_ms_p95": 362.8403274080483,
+  "n_facts": 60
+ }
+}
