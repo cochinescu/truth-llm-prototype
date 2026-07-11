@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "truthllm-prototype"
+version = "0.1.0"
+description = "Stage-A synthetic reference implementation of the truth expression-and-revision layer (Paper 3)"
+requires-python = ">=3.11"
+dependencies = ["numpy>=2.0", "matplotlib>=3.9"]
+
+[project.optional-dependencies]
+dev = ["pytest>=8"]
+
+# Explicit package discovery: the flat layout has non-package data dirs
+# (results/, benchmark/) that setuptools auto-discovery would otherwise treat
+# as top-level packages and refuse to build. Ship only the importable package.
+[tool.setuptools]
+packages = ["truthllm"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]

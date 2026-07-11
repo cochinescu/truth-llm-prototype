@@ -1,0 +1,24 @@
+{
+  "benchmarkVersion": "1.0",
+  "nCases": 120,
+  "params": {
+    "correct_true_rate": 0.5,
+    "n_sessions": 3,
+    "n_subjects": 60,
+    "tell_true_rate": 0.5,
+    "turn_mix": {
+      "ASK": 0.5,
+      "CORRECT": 0.15,
+      "REASK": 0.15,
+      "TELL": 0.2
+    },
+    "turns_per_session": 8
+  },
+  "schemaVersion": "1.0",
+  "seed": 20260712,
+  "sha256": {
+    "instances.jsonl": "b15ed91331e2cc5a40f2f428009909eb2606323e936c5fcf373a9a549ffa043d",
+    "labels.jsonl": "a05f8c65f53b338d09cb233499a532c7ed0c8fffbeb880729f7b9cf6465e955e"
+  },
+  "worldSeed": 20260711
+}

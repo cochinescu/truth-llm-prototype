@@ -1,0 +1,108 @@
+{
+  "master_seed": 20260711,
+  "quick": false,
+  "n_cases": 120,
+  "benchmark": "benchmark/v1.0 (frozen, sha-verified, seed 20260712)",
+  "bootstrap_n": 2000,
+  "overhead_iters": 200,
+  "extractor_modes": [
+    "combined",
+    "signal",
+    "consistency"
+  ],
+  "arms": [
+    "full",
+    "uniform",
+    "always_hedged",
+    "threshold_only",
+    "store_no_ack",
+    "no_provenance",
+    "stateless"
+  ],
+  "protocol": {
+    "MASTER_SEED": 20260711,
+    "SEED_WORLD": 20260711,
+    "SEED_BENCHMARK": 20260712,
+    "SEED_ARM_BASE": 20260811,
+    "SEED_BOOTSTRAP": 20261710,
+    "CONF_LOW": 0.4,
+    "CONF_HIGH": 0.75,
+    "NOT_KNOWING_FLOOR": 0.15,
+    "NOMINAL_CONF": {
+      "HEDGE_LOW": 0.3,
+      "HEDGE_HIGH": 0.6,
+      "ASSERT": 0.9
+    },
+    "GATING_TABLE": {
+      "PARAMETRIC": {
+        "LOW": "DECLINE",
+        "MID": "HEDGE_LOW",
+        "HIGH": "ASSERT"
+      },
+      "RETRIEVED": {
+        "LOW": "HEDGE_LOW",
+        "MID": "HEDGE_HIGH",
+        "HIGH": "ASSERT"
+      },
+      "INFERRED": {
+        "LOW": "DECLINE",
+        "MID": "HEDGE_LOW",
+        "HIGH": "HEDGE_HIGH"
+      },
+      "TOLD": {
+        "LOW": "HEDGE_LOW",
+        "MID": "HEDGE_HIGH",
+        "HIGH": "HEDGE_HIGH"
+      }
+    },
+    "ABLATION_MAP": {
+      "LOW": "HEDGE_LOW",
+      "MID": "HEDGE_HIGH",
+      "HIGH": "ASSERT"
+    },
+    "K_SAMPLES": 15,
+    "SIGNAL_NOISE": 0.05,
+    "THETA_ACCEPT": 0.75,
+    "CORRECTION_CONF": 0.85,
+    "TOLD_CONF": 0.6,
+    "RETRIEVED_CONF": 0.8,
+    "N_SUBJECTS": 60,
+    "KNOWLEDGE_MIX": {
+      "CORRECT": 0.45,
+      "WRONG": 0.15,
+      "UNCERTAIN": 0.2,
+      "ABSENT": 0.2
+    },
+    "HALLUCINATION_RATE": 0.6,
+    "RELIABILITY_HIGH": [
+      0.7,
+      0.98
+    ],
+    "RELIABILITY_LOW": [
+      0.2,
+      0.5
+    ],
+    "RELIABILITY_HALLUC": [
+      0.5,
+      0.8
+    ],
+    "RETRIEVAL_COVERAGE": 0.5,
+    "RETRIEVAL_STALE": 0.1,
+    "RETRIEVAL_RATE": 0.5,
+    "N_CASES": 120,
+    "N_SESSIONS": 3,
+    "TURNS_PER_SESSION": 8,
+    "TURN_MIX": {
+      "ASK": 0.5,
+      "TELL": 0.2,
+      "CORRECT": 0.15,
+      "REASK": 0.15
+    },
+    "TELL_TRUE_RATE": 0.5,
+    "CORRECT_TRUE_RATE": 0.5,
+    "BOOTSTRAP_N": 2000,
+    "OVERHEAD_ITERS": 200
+  },
+  "generated_utc": "2026-07-11T01:04:43+00:00",
+  "wall_seconds": 54.32
+}
