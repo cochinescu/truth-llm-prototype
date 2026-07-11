@@ -160,3 +160,16 @@ requiring its own pre-registered pass.
 | C5 delivery (Stage C) | FROZEN | delivered IFF manipulation check AND equivalence pass, reported "under the Stage-C freeze" with this disclosure chain cited; no relabeling of Stage-B verdicts |
 | outputs | FROZEN | `results/stagec/`; Stage-B results untouched; model cache shared read-only from `results/stageb/model_cache.json` |
 | binding-frequency diagnostic | FROZEN (descriptive) | fraction of cached facts where logit < consistency (the min operator binds to the logit extractor) — reported as Stage-B context per reviewer suggestion; no margin attached |
+
+### Stage-C robustness draw (2026-07-11 — committed BEFORE it ran; answers the instance-reuse objection)
+
+A reviewer objection: Stage C re-scores the same frozen benchmark instances
+that informed the configuration choice, so its confirmatory weight on an
+independent instance draw is unproven. The empirical answer, frozen here
+before running: regenerate the benchmark with a **fresh seed, MASTER+4
+(20260715)** — same generator, same world, same case shape/mix, new instances
+and injections — and re-run the full Stage-C grid on it under the identical
+frozen margins. Outputs to `results/stagec-fresh/`. Both outcomes are
+reportable: a pass defeats the instance-reuse objection; a fail scopes the
+delivery to the original instance set and is reported as such. Nothing about
+the layer, model, cache, arms, seeds scheme, or margins changes.
