@@ -1,0 +1,8 @@
+{
+  "diagnostic": "min-operator binding frequency (PROTOCOL Stage-C freeze, descriptive)",
+  "n_facts_with_candidate": 60,
+  "binds_logit": 18,
+  "binds_consistency_or_tie": 42,
+  "fraction_binding_logit": 0.3,
+  "note": "computed from the shared Stage-B per-fact cache; 'binds logit' = logit < consistency, i.e. the conservative min inherits the logit extractor's (sign-inverted) ranking on that fact"
+}

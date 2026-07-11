@@ -1,4 +1,9 @@
-"""Stage-B grid: the pinned real model over the frozen stageb-v1.0 benchmark.
+"""Stage-B/C grids: the pinned real model over the frozen stageb-v1.0 benchmark.
+
+--stage b (default): the original Stage-B grid, unchanged.
+--stage c: the consistency-extractor-gated configuration (PROTOCOL Stage-C
+freeze): identical world/benchmark/model-cache/seeds, ALL arms run with the
+consistency extractor as sole confidence source; outputs to results/stagec/.
 
 Usage:
     python scripts/reproduce_stageb.py [--seed 20260711] [--quick]
@@ -56,10 +61,15 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--seed", type=int, default=protocol.MASTER_SEED)
     ap.add_argument("--quick", action="store_true")
+    ap.add_argument("--stage", choices=["b", "c"], default="b")
+    ap.add_argument("--outdir", default=None,
+                    help="output dir (default results/stageb or results/stagec)")
     args = ap.parse_args()
 
+    primary = "combined" if args.stage == "b" else "consistency"
+    modes = EXTRACTOR_MODES if args.stage == "b" else ["consistency"]
     boot_n = 200 if args.quick else protocol.BOOTSTRAP_N
-    results = ROOT / "results" / "stageb"
+    results = Path(args.outdir) if args.outdir else ROOT / "results" / ("stageb" if args.stage == "b" else "stagec")
     results.mkdir(parents=True, exist_ok=True)
     (results / "events").mkdir(exist_ok=True)
     t_start = time.perf_counter()
@@ -76,14 +86,14 @@ def main() -> int:
         instances, labels_rows = instances[:20], labels_rows[:20]
     labels = {row["case_id"]: row["turn_labels"] for row in labels_rows}
 
-    # pinned model, fact-level cache
+    # pinned model, fact-level cache (shared, canonical location for all stages)
     model = LLMBaseModel(world.subjects, seed=args.seed,
-                         cache_path=results / "model_cache.json")
+                         cache_path=ROOT / "results" / "stageb" / "model_cache.json")
 
     runs: dict[tuple[str, str], list] = {}
-    for mode in EXTRACTOR_MODES:
+    for mode in modes:
         for i, arm_name in enumerate(ARM_ORDER):
-            if mode != "combined" and arm_name not in FIDELITY_ARMS:
+            if mode != primary and arm_name not in FIDELITY_ARMS:
                 continue
             rng = np.random.default_rng(protocol.SEED_ARM_BASE + i
                                         + 1000 * EXTRACTOR_MODES.index(mode))
@@ -119,7 +129,7 @@ def main() -> int:
 
     con_rows = []
     for arm in ARM_ORDER:
-        ce = runs[(arm, "combined")]
+        ce = runs[(arm, primary)]
         est, lo, hi = cluster_bootstrap(ce, contradiction_rate, n=boot_n, seed=protocol.SEED_BOOTSTRAP)
         n_acks, n_traced = ack_audit(ce)
         n_accepted, _n_ackt = ack_completeness(ce)
@@ -132,7 +142,7 @@ def main() -> int:
 
     asr_rows, cap_rows = [], []
     for arm in ARM_ORDER:
-        ce = runs[(arm, "combined")]
+        ce = runs[(arm, primary)]
         est, lo, hi = cluster_bootstrap(
             ce, lambda c: assertion_rates(c, world)["confidently_false_rate"],
             n=boot_n, seed=protocol.SEED_BOOTSTRAP)
@@ -156,7 +166,7 @@ def main() -> int:
 
     # capability equivalence (TOST-style, full vs uniform, paired)
     d_est, d_lo, d_hi = paired_difference_ci(
-        runs[("full", "combined")], runs[("uniform", "combined")],
+        runs[("full", primary)], runs[("uniform", primary)],
         lambda c: assertion_rates(c, world)["answer_accuracy"],
         n=boot_n, seed=protocol.SEED_BOOTSTRAP)
     equivalent = (-EQUIV_MARGIN <= d_lo) and (d_hi <= EQUIV_MARGIN)
@@ -185,51 +195,72 @@ def main() -> int:
     _write_csv(results / "overhead.csv", ["config", "median_ms", "ci_lo", "ci_hi"], oh_rows)
 
     for arm in ARM_ORDER:
-        _write_events(results / "events" / f"{arm}.jsonl", runs[(arm, "combined")])
+        _write_events(results / "events" / f"{arm}.jsonl", runs[(arm, primary)])
 
     # --- margin verdicts (pre-registered) --------------------------------------
     fid = {(r[0], r[1]): float(r[2]) for r in fid_rows}
     con = {r[0]: float(r[1]) for r in con_rows}
     asr = {r[0]: float(r[1]) for r in asr_rows}
     corr = {r[0]: (r[7], r[8]) for r in con_rows}
-    checks = [
-        ("C2 margin (logit): full ECE <= controls - 0.02",
-         fid[("full", "logit")] <= fid[("uniform", "logit")] - MARGIN_C2
-         and fid[("full", "logit")] <= fid[("always_hedged", "logit")] - MARGIN_C2),
-        ("C2 margin (consistency): full ECE <= controls - 0.02",
-         fid[("full", "consistency")] <= fid[("uniform", "consistency")] - MARGIN_C2
-         and fid[("full", "consistency")] <= fid[("always_hedged", "consistency")] - MARGIN_C2),
-        ("C3 margin: stateless - store arms >= 0.03",
-         all(con["stateless"] - con[a] >= MARGIN_C3 for a in con if a != "stateless")),
-        ("C3 audit: 100% acknowledgment traceability",
-         all(int(r[4]) == int(r[5]) for r in con_rows)),
-        ("C3 corrections: false-accept <= true-accept - 0.10",
-         all(float(f) <= float(t) - MARGIN_CORR
-             for a, (t, f) in corr.items() if t and f)),
-        ("C4 margin: no_provenance - full >= 0.02",
-         asr["no_provenance"] - asr["full"] >= MARGIN_C4),
-        ("Capability equivalence (TOST +/-0.05, full vs uniform)", equivalent),
-    ]
-    c5_delivered = checks[0][1] and checks[1][1] and equivalent
-
-    # Amendment 1 verdicts (original verdicts above remain untouched)
     auc = {(r[0], r[1]): float(r[2]) for r in auc_rows}
-    amended_checks = []
-    for mode in ["logit", "consistency"]:
-        ok = (auc[("full", mode)] >= AUC_FLOOR
-              and auc[("full", mode)] >= auc[("uniform", mode)] + AUC_DELTA
-              and auc[("full", mode)] >= auc[("always_hedged", mode)] + AUC_DELTA)
-        amended_checks.append((f"Amendment 1 ({mode}): full AUC >= 0.60 and >= controls + 0.05", ok))
-    c5_amended = all(ok for _, ok in amended_checks) and equivalent
+    if args.stage == "c":
+        checks = [
+            ("Stage-C manipulation check (consistency): full AUC >= 0.60 and >= controls + 0.05",
+             auc[("full", "consistency")] >= AUC_FLOOR
+             and auc[("full", "consistency")] >= auc[("uniform", "consistency")] + AUC_DELTA
+             and auc[("full", "consistency")] >= auc[("always_hedged", "consistency")] + AUC_DELTA),
+            ("C3 margin: stateless - store arms >= 0.03",
+             all(con["stateless"] - con[a] >= MARGIN_C3 for a in con if a != "stateless")),
+            ("C3 audit: 100% acknowledgment traceability",
+             all(int(r[4]) == int(r[5]) for r in con_rows)),
+            ("C3 corrections: false-accept <= true-accept - 0.10",
+             all(float(f) <= float(t) - MARGIN_CORR
+                 for a, (t, f) in corr.items() if t and f)),
+            ("C4 margin: no_provenance - full >= 0.02",
+             asr["no_provenance"] - asr["full"] >= MARGIN_C4),
+            ("Capability equivalence (TOST +/-0.05, full vs uniform)", equivalent),
+        ]
+        c5_delivered = checks[0][1] and equivalent
+        amended_checks = []
+        c5_amended = c5_delivered
+    else:
+        checks = [
+            ("C2 margin (logit): full ECE <= controls - 0.02",
+             fid[("full", "logit")] <= fid[("uniform", "logit")] - MARGIN_C2
+             and fid[("full", "logit")] <= fid[("always_hedged", "logit")] - MARGIN_C2),
+            ("C2 margin (consistency): full ECE <= controls - 0.02",
+             fid[("full", "consistency")] <= fid[("uniform", "consistency")] - MARGIN_C2
+             and fid[("full", "consistency")] <= fid[("always_hedged", "consistency")] - MARGIN_C2),
+            ("C3 margin: stateless - store arms >= 0.03",
+             all(con["stateless"] - con[a] >= MARGIN_C3 for a in con if a != "stateless")),
+            ("C3 audit: 100% acknowledgment traceability",
+             all(int(r[4]) == int(r[5]) for r in con_rows)),
+            ("C3 corrections: false-accept <= true-accept - 0.10",
+             all(float(f) <= float(t) - MARGIN_CORR
+                 for a, (t, f) in corr.items() if t and f)),
+            ("C4 margin: no_provenance - full >= 0.02",
+             asr["no_provenance"] - asr["full"] >= MARGIN_C4),
+            ("Capability equivalence (TOST +/-0.05, full vs uniform)", equivalent),
+        ]
+        c5_delivered = checks[0][1] and checks[1][1] and equivalent
+        # Amendment 1 verdicts (original verdicts above remain untouched)
+        amended_checks = []
+        for mode in ["logit", "consistency"]:
+            ok = (auc[("full", mode)] >= AUC_FLOOR
+                  and auc[("full", mode)] >= auc[("uniform", mode)] + AUC_DELTA
+                  and auc[("full", mode)] >= auc[("always_hedged", mode)] + AUC_DELTA)
+            amended_checks.append((f"Amendment 1 ({mode}): full AUC >= 0.60 and >= controls + 0.05", ok))
+        c5_amended = all(ok for _, ok in amended_checks) and equivalent
 
     meta = {
-        "stage": "B",
+        "stage": args.stage.upper(),
         "master_seed": args.seed, "quick": args.quick,
         "n_cases": len(instances),
         "benchmark": f"benchmark/{BENCH_VERSION} (frozen, sha-verified, seed {manifest['seed']})",
         "model": model.meta,
         "bootstrap_n": boot_n,
-        "extractor_modes": EXTRACTOR_MODES,
+        "extractor_modes": modes,
+        "primary_mode": primary,
         "margins": {"C2": MARGIN_C2, "C3": MARGIN_C3, "corrections": MARGIN_CORR,
                     "C4": MARGIN_C4, "equivalence": EQUIV_MARGIN},
         "generated_utc": datetime.now(timezone.utc).isoformat(timespec="seconds"),
@@ -241,9 +272,13 @@ def main() -> int:
     make_figures(results)
     _write_results_md(results, meta, checks, c5_delivered, fid_rows, con_rows,
                       asr_rows, oh_rows, (d_est, d_lo, d_hi, equivalent),
-                      auc_rows, amended_checks, c5_amended)
-    print(f"stage-B done: {len(instances)} cases, {meta['wall_seconds']}s -> {results}")
-    print("C5 (original check):", c5_delivered, "| C5 under Amendment 1:", c5_amended)
+                      auc_rows, amended_checks, c5_amended, args.stage, modes)
+    print(f"stage-{args.stage.upper()} done: {len(instances)} cases, "
+          f"{meta['wall_seconds']}s -> {results}")
+    if args.stage == "b":
+        print("C5 (original check):", c5_delivered, "| C5 under Amendment 1:", c5_amended)
+    else:
+        print("C5 under the Stage-C freeze:", c5_amended)
     return 0
 
 
@@ -280,11 +315,15 @@ def _write_events(path, case_events):
 
 
 def _write_results_md(results, meta, checks, c5, fid_rows, con_rows, asr_rows,
-                      oh_rows, equiv, auc_rows, amended_checks, c5_amended):
+                      oh_rows, equiv, auc_rows, amended_checks, c5_amended,
+                      stage="b", modes=None):
+    modes = modes or EXTRACTOR_MODES
     d_est, d_lo, d_hi, equivalent = equiv
     fid = {(r[0], r[1]): float(r[2]) for r in fid_rows}
     lines = [
-        "# Truth Prototype Results — Stage B (pinned real model, final grid)",
+        ("# Truth Prototype Results — Stage C (consistency-gated configuration, "
+         "pre-registered pass)" if stage == "c" else
+         "# Truth Prototype Results — Stage B (pinned real model, final grid)"),
         "",
         f"Model: `{meta['model'].get('model_id')}` @ revision "
         f"`{meta['model'].get('revision')}` on {meta['model'].get('device')} · "
@@ -304,34 +343,49 @@ def _write_results_md(results, meta, checks, c5, fid_rows, con_rows, asr_rows,
     auc = {(r[0], r[1]): float(r[2]) for r in auc_rows}
     lines += [
         "",
-        f"**C5 under the ORIGINAL frozen check: "
-        f"{'DELIVERED' if c5 else 'NOT delivered'}** (verdict stands, never relabeled).",
+        (f"**C5 under the Stage-C freeze conditions (pre-verdict summary below)**"
+         if stage == "c" else
+         f"**C5 under the ORIGINAL frozen check: "
+         f"{'DELIVERED' if c5 else 'NOT delivered'}** (verdict stands, never relabeled)."),
         "",
-        "## Amendment 1 (disclosed post-hoc; see PROTOCOL.md) — expression-discrimination AUC",
+        ("## Expression-discrimination AUC (Stage-C manipulation check)" if stage == "c"
+         else "## Amendment 1 (disclosed post-hoc; see PROTOCOL.md) — expression-discrimination AUC"),
         "",
-        "| arm | combined | logit | consistency |",
-        "| --- | ---: | ---: | ---: |",
+        "| arm | " + " | ".join(modes) + " |",
+        "| --- |" + " ---: |" * len(modes),
     ]
     for arm in FIDELITY_ARMS:
         lines.append(f"| {arm} | " + " | ".join(
-            f"{auc[(arm, m)]:.3f}" for m in EXTRACTOR_MODES) + " |")
-    lines += ["", "| Amended check | Result |", "| --- | --- |"]
-    lines += [f"| {name} | {'PASS' if ok else '**FAIL**'} |" for name, ok in amended_checks]
+            f"{auc[(arm, m)]:.3f}" for m in modes) + " |")
+    if stage == "b":
+        lines += ["", "| Amended check | Result |", "| --- | --- |"]
+        lines += [f"| {name} | {'PASS' if ok else '**FAIL**'} |" for name, ok in amended_checks]
+        lines += [
+            "",
+            f"**C5 under Amendment 1 (amended manipulation check AND capability "
+            f"equivalence): {'DELIVERED' if c5_amended else 'NOT delivered'}** — "
+            f"reported with the amendment's post-hoc disclosure; the original FAIL "
+            f"verdicts above remain in force as the pre-registered outcome.",
+        ]
+    else:
+        lines += [
+            "",
+            f"**C5 under the Stage-C freeze (manipulation check AND capability "
+            f"equivalence): {'DELIVERED' if c5_amended else 'NOT delivered'}** — "
+            f"evaluated per the pre-committed Stage-C freeze (PROTOCOL.md), whose "
+            f"prior-knowledge disclosure applies: the manipulation-check value was "
+            f"expected from Stage B; the equivalence outcome was unknown at freeze.",
+        ]
     lines += [
-        "",
-        f"**C5 under Amendment 1 (amended manipulation check AND capability "
-        f"equivalence): {'DELIVERED' if c5_amended else 'NOT delivered'}** — "
-        f"reported with the amendment's post-hoc disclosure; the original FAIL "
-        f"verdicts above remain in force as the pre-registered outcome.",
         "",
         "## Expression fidelity (C2) — expression-ECE, lower is better",
         "",
-        "| arm | combined | logit | consistency |",
-        "| --- | ---: | ---: | ---: |",
+        "| arm | " + " | ".join(modes) + " |",
+        "| --- |" + " ---: |" * len(modes),
     ]
     for arm in FIDELITY_ARMS:
         lines.append(f"| {arm} | " + " | ".join(
-            f"{fid[(arm, m)]:.3f}" for m in EXTRACTOR_MODES) + " |")
+            f"{fid[(arm, m)]:.3f}" for m in modes) + " |")
     lines += ["", "## Consistency & revision (C3)", "",
               "| arm | contradiction rate | acks | traced | accepted revs | true-corr accept | false-corr accept |",
               "| --- | ---: | ---: | ---: | ---: | ---: | ---: |"]
@@ -357,9 +411,17 @@ def _write_results_md(results, meta, checks, c5, fid_rows, con_rows, asr_rows,
         "",
         "## Honesty notes (non-negotiable)",
         "",
-        "- **These are the paper's headline numbers** (Stage A validated the",
-        "  instrument only). One pinned 0.5B model, one machine — claims are scoped",
-        "  to this model class; no second model was run (R6).",
+        ("- **Stage-C numbers under the pre-committed Stage-C freeze** (see the"
+         if stage == "c" else
+         "- **These are the paper's headline numbers** (Stage A validated the"),
+        ("  PROTOCOL.md disclosure chain); Stage-A/B verdicts stand unchanged."
+         if stage == "c" else
+         "  instrument only). One pinned 0.5B model, one machine — claims are scoped"),
+        ("  One pinned 0.5B model, one machine; the extractor choice is the"
+         if stage == "c" else
+         "  to this model class; no second model was run (R6)."),
+        ("  configuration's pre-registered design decision, not outcome-shopping."
+         if stage == "c" else ""),
         "- The world is a 60-fact real-geography table chosen for unambiguity; the",
         "  model's error pattern is its own (no injected corruption). Provenance",
         "  tags remain pipeline instrumentation; benchmark contradictions and",

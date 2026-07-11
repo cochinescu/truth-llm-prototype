@@ -1,0 +1,8 @@
+arm,contradiction_rate,ci_lo,ci_hi,n_acks,n_traced,n_accepted_revisions,true_accept_rate,false_accept_rate
+full,0.0000,0.0000,0.0000,42,42,195,0.8707,0.4352
+uniform,0.0000,0.0000,0.0000,71,71,205,0.8696,0.4508
+always_hedged,0.0000,0.0000,0.0000,63,63,197,0.8649,0.4352
+threshold_only,0.0000,0.0000,0.0000,70,70,204,0.8696,0.4404
+store_no_ack,0.0000,0.0000,0.0000,0,0,194,0.8718,0.4352
+no_provenance,0.0000,0.0000,0.0000,50,50,190,0.8673,0.4301
+stateless,0.0229,0.0038,0.0482,0,0,0,,

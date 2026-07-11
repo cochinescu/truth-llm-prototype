@@ -1,0 +1,9 @@
+arm,extractor_mode,category,empirical_acc,nominal,n
+full,consistency,HEDGE_LOW,0.7736,0.3,265
+full,consistency,HEDGE_HIGH,0.9685,0.6,666
+full,consistency,ASSERT,0.9453,0.9,622
+uniform,consistency,ASSERT,0.8975,0.9,1737
+always_hedged,consistency,HEDGE_LOW,0.9069,0.3,1719
+threshold_only,consistency,HEDGE_LOW,0.7737,0.3,190
+threshold_only,consistency,HEDGE_HIGH,0.7300,0.6,300
+threshold_only,consistency,ASSERT,0.9582,0.9,1245

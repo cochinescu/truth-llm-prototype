@@ -25,7 +25,8 @@ def _read(path: Path) -> list[dict]:
 
 
 def make_figures(results: Path) -> None:
-    label = "Stage B" if "stageb" in str(results) else "Stage A"
+    sr = str(results)
+    label = "Stage C" if "stagec" in sr else ("Stage B" if "stageb" in sr else "Stage A")
     _fig1_reliability(results, label)
     _fig2_consistency(results, label)
     _fig3_assertions(results, label)
@@ -34,9 +35,10 @@ def make_figures(results: Path) -> None:
 
 def _fig1_reliability(results: Path, label: str) -> None:
     rows = _read(results / "fidelity_bins.csv")
-    modes = sorted({r["extractor_mode"] for r in rows} - {"combined"})[:2]
-    fig, axes = plt.subplots(1, 2, figsize=(9, 4), sharey=True)
-    for ax, mode in zip(axes, modes):
+    modes = sorted({r["extractor_mode"] for r in rows} - {"combined"})[:2] or ["combined"]
+    fig, axes = plt.subplots(1, max(len(modes), 1), figsize=(4.5 * max(len(modes), 1), 4),
+                             sharey=True, squeeze=False)
+    for ax, mode in zip(axes[0], modes):
         ax.plot([0, 1], [0, 1], "k--", lw=0.8, label="perfect fidelity")
         for arm in ["full", "uniform", "always_hedged"]:
             pts = sorted(
@@ -48,10 +50,12 @@ def _fig1_reliability(results: Path, label: str) -> None:
         ax.set_xlabel("nominal confidence of expression category")
         ax.set_xlim(0, 1)
         ax.set_ylim(0, 1)
-    axes[0].set_ylabel("empirical accuracy")
-    axes[0].legend(fontsize=8)
-    fig.suptitle(f"Expression fidelity (C2): reliability over expression categories — {label}")
-    fig.tight_layout()
+    axes[0][0].set_ylabel("empirical accuracy")
+    axes[0][0].legend(fontsize=8)
+    title = (f"Expression fidelity (C2) — {label}" if len(modes) == 1 else
+             f"Expression fidelity (C2): reliability over expression categories — {label}")
+    fig.suptitle(title)
+    fig.tight_layout(rect=(0, 0, 1, 0.93))
     fig.savefig(results / "fig1_reliability.png", dpi=150)
     plt.close(fig)
 

@@ -1,0 +1,2 @@
+pair,delta_accuracy,ci_lo,ci_hi,margin,equivalent
+full_vs_uniform,0.0284,0.0155,0.0420,0.05,True

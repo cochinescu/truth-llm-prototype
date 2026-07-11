@@ -1,0 +1,5 @@
+arm,extractor_mode,ece,ci_lo,ci_hi
+full,consistency,0.2570,0.2421,0.2724
+uniform,consistency,0.0025,0.0003,0.0164
+always_hedged,consistency,0.6069,0.5943,0.6207
+threshold_only,consistency,0.1161,0.1023,0.1308
