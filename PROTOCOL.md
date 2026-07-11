@@ -125,3 +125,38 @@ information.
 | anchor-ECE | FROZEN | still computed and reported; its Stage-B FAIL verdict stands in all outputs |
 | C5 under Amendment 1 | FROZEN | delivered IFF amended check passes AND capability equivalence (already PASS); delivery is reported as "under Amendment 1" with this disclosure cited |
 | auditability reciprocal (review F1) | FROZEN | ack_completeness = acknowledged turns / accepted revisions, reported as a measured fraction; the 100% claim applies to the soundness direction (utterance → accepted entry) only |
+
+## Stage-C freeze (2026-07-11 — committed BEFORE the Stage-C grid ran; commit separation attests ordering)
+
+**Configuration (FROZEN):** the consistency-extractor-gated layer — identical to
+Stage B in every respect (same pinned model + cache, same frozen
+`benchmark/stageb-v1.0`, same world, same arms, same seeds scheme, same
+N=120) except that ALL arms run with the consistency extractor as the sole
+confidence source (`extractor_mode="consistency"`). This is the path forward
+identified by Stage B's extractor-dependence finding and named in the paper as
+requiring its own pre-registered pass.
+
+**Disclosure of prior knowledge (FROZEN — read before the verdicts):**
+- KNOWN before this freeze, from Stage B's per-extractor robustness runs
+  (fidelity arms only): consistency-mode AUC full 0.661 [0.604, 0.727],
+  uniform/always-hedged exactly 0.5, threshold-only 0.730 [0.697, 0.770];
+  consistency-mode ECE for the same four arms. The manipulation check below is
+  therefore EXPECTED to pass; we register it anyway for completeness and CI
+  re-verification, and we say so.
+- UNKNOWN at freeze time: every outcome for the non-fidelity arms under
+  consistency gating (Stage B ran store_no_ack / no_provenance / stateless in
+  combined mode only); all C3/C4 rates, coverage, accuracy, corrections, and —
+  decisive for delivery — **capability equivalence under consistency-only
+  gating** (single-extractor state assignment changes which claims decline or
+  assert, so coverage/accuracy shift unpredictably).
+- **The C5 delivery decision therefore hinges on the equivalence outcome,
+  which is unknown at freeze time.**
+
+| item | status | value |
+|---|---|---|
+| manipulation check (Stage C) | FROZEN | AUC(full, consistency) ≥ 0.60 AND ≥ each control + 0.05. The per-extractor robustness clause of Amendment 1 does not apply: the extractor choice IS the pre-registered design decision of this configuration, justified by Stage B's mechanism finding, not by outcome-shopping |
+| C3 / corrections / C4 margins | FROZEN | identical to Stage B (0.03 / 0.10 / 0.02) for comparability; outcomes unknown |
+| capability equivalence | FROZEN | paired cluster-bootstrap CI of Δ answer-when-given accuracy (full − uniform) within ±0.05; unknown at freeze |
+| C5 delivery (Stage C) | FROZEN | delivered IFF manipulation check AND equivalence pass, reported "under the Stage-C freeze" with this disclosure chain cited; no relabeling of Stage-B verdicts |
+| outputs | FROZEN | `results/stagec/`; Stage-B results untouched; model cache shared read-only from `results/stageb/model_cache.json` |
+| binding-frequency diagnostic | FROZEN (descriptive) | fraction of cached facts where logit < consistency (the min operator binds to the logit extractor) — reported as Stage-B context per reviewer suggestion; no margin attached |
