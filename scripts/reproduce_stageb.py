@@ -30,7 +30,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from benchmark.build_benchmark import freeze, load  # noqa: E402
+from benchmark.build_benchmark import freeze, generate, load  # noqa: E402
 from truthllm import protocol  # noqa: E402
 from truthllm.arms import ARM_ORDER, ARMS  # noqa: E402
 from truthllm.llm_model import LLMBaseModel  # noqa: E402
@@ -64,6 +64,9 @@ def main() -> int:
     ap.add_argument("--stage", choices=["b", "c"], default="b")
     ap.add_argument("--outdir", default=None,
                     help="output dir (default results/stageb or results/stagec)")
+    ap.add_argument("--bench-seed", type=int, default=None,
+                    help="generate a fresh in-memory benchmark with this seed "
+                         "instead of loading the frozen one (robustness draws)")
     args = ap.parse_args()
 
     primary = "combined" if args.stage == "b" else "consistency"
@@ -78,10 +81,15 @@ def main() -> int:
     rules = world.public_rules()
     docs = world.retrieval_docs(seed=args.seed)
 
-    # frozen benchmark (generate + freeze on first run, verify thereafter)
-    if not (ROOT / "benchmark" / BENCH_VERSION / "MANIFEST.json").exists():
-        freeze(BENCH_VERSION, world=world, seed=args.seed + 2)
-    instances, labels_rows, manifest = load(BENCH_VERSION, verify=True)
+    # frozen benchmark (generate + freeze on first run, verify thereafter);
+    # --bench-seed generates a fresh draw in memory (robustness re-runs)
+    if args.bench_seed is not None:
+        instances, labels_rows = generate(world, seed=args.bench_seed)
+        manifest = {"seed": args.bench_seed, "fresh_draw": True}
+    else:
+        if not (ROOT / "benchmark" / BENCH_VERSION / "MANIFEST.json").exists():
+            freeze(BENCH_VERSION, world=world, seed=args.seed + 2)
+        instances, labels_rows, manifest = load(BENCH_VERSION, verify=True)
     if args.quick:
         instances, labels_rows = instances[:20], labels_rows[:20]
     labels = {row["case_id"]: row["turn_labels"] for row in labels_rows}
@@ -256,7 +264,9 @@ def main() -> int:
         "stage": args.stage.upper(),
         "master_seed": args.seed, "quick": args.quick,
         "n_cases": len(instances),
-        "benchmark": f"benchmark/{BENCH_VERSION} (frozen, sha-verified, seed {manifest['seed']})",
+        "benchmark": (f"fresh in-memory draw, seed {manifest['seed']}"
+                      if manifest.get("fresh_draw")
+                      else f"benchmark/{BENCH_VERSION} (frozen, sha-verified, seed {manifest['seed']})"),
         "model": model.meta,
         "bootstrap_n": boot_n,
         "extractor_modes": modes,
