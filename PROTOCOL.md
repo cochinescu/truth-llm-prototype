@@ -92,3 +92,23 @@ C5 hand-off conditions evaluate ONLY against Stage-B numbers: IF C2 margin met
 (full vs threshold_only/uniform ablations, configs + outputs in the archive) is
 delivered for Paper 5; otherwise the paper says so and the Paper-5 truth arm
 stays blocked (no post-hoc relabeling).
+
+## Amendment 1 (2026-07-11) — amended manipulation check
+
+**Disclosure (FROZEN):** this amendment was adopted AFTER the Stage-B grid ran
+and its anchor-ECE manipulation check failed. The original frozen check and its
+FAIL verdict remain reported, unchanged, wherever results appear; the amendment
+never replaces or relabels them. The amended metric was specified from the
+structural analysis of the failure (anchor-degeneracy: any single-category
+policy scores as calibrated whenever corpus accuracy sits near its anchor), not
+tuned against arm outcomes; its margin is anchored to the chance value 0.5,
+which every single-category policy attains by construction.
+
+| item | status | value |
+|---|---|---|
+| amended manipulation check | FROZEN | expression-discrimination AUC: P(rank(category of a correct expressed claim) > rank(incorrect)), ties ½; category ranks HEDGE_LOW < HEDGE_HIGH < ASSERT; DECLINEs excluded (coverage) |
+| rationale | FROZEN | the framework requirement is evidence-CONGRUENCE ("evidence-sensitive expression rather than performative humility") — a covariation property; discrimination captures it, anchor-ECE conflates it with anchor placement |
+| margin | FROZEN | AUC(full) ≥ 0.60 AND ≥ AUC(each control) + 0.05, under BOTH extractors (controls = uniform, always_hedged; both are exactly 0.5 structurally) |
+| anchor-ECE | FROZEN | still computed and reported; its Stage-B FAIL verdict stands in all outputs |
+| C5 under Amendment 1 | FROZEN | delivered IFF amended check passes AND capability equivalence (already PASS); delivery is reported as "under Amendment 1" with this disclosure cited |
+| auditability reciprocal (review F1) | FROZEN | ack_completeness = acknowledged turns / accepted revisions, reported as a measured fraction; the 100% claim applies to the soundness direction (utterance → accepted entry) only |

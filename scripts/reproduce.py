@@ -28,8 +28,9 @@ from truthllm import protocol  # noqa: E402
 from truthllm.arms import ARM_ORDER, ARMS  # noqa: E402
 from truthllm.basemodel import SyntheticBaseModel  # noqa: E402
 from truthllm.metrics import (  # noqa: E402
-    ack_audit, assertion_rates, cluster_bootstrap, contradiction_rate,
-    correction_scores, expression_ece, overhead_ms,
+    ack_audit, ack_completeness, assertion_rates, cluster_bootstrap,
+    contradiction_rate, correction_scores, expression_auc, expression_ece,
+    overhead_ms,
 )
 from truthllm.pipeline import run_conversation  # noqa: E402
 from truthllm.world import World  # noqa: E402
@@ -97,18 +98,30 @@ def main() -> int:
     _write_csv(results / "fidelity_bins.csv",
                ["arm", "extractor_mode", "category", "empirical_acc", "nominal", "n"], bin_rows)
 
+    # --- discrimination.csv (Amendment 1: expression-AUC) ---------------------
+    auc_rows = []
+    for (arm, mode), case_events in runs.items():
+        if arm not in FIDELITY_ARMS:
+            continue
+        est, lo, hi = cluster_bootstrap(case_events, lambda ce: expression_auc(ce, world),
+                                        n=boot_n, seed=protocol.SEED_BOOTSTRAP)
+        auc_rows.append([arm, mode, f"{est:.4f}", f"{lo:.4f}", f"{hi:.4f}"])
+    _write_csv(results / "discrimination.csv",
+               ["arm", "extractor_mode", "auc", "ci_lo", "ci_hi"], auc_rows)
+
     # --- consistency.csv (C3) --------------------------------------------------
     con_rows = []
     for arm in ARM_ORDER:
         ce = runs[(arm, "combined")]
         est, lo, hi = cluster_bootstrap(ce, contradiction_rate, n=boot_n, seed=protocol.SEED_BOOTSTRAP)
         n_acks, n_traced = ack_audit(ce)
+        n_accepted, _n_ackt = ack_completeness(ce)
         t_acc, f_acc = correction_scores(ce, labels)
         con_rows.append([arm, f"{est:.4f}", f"{lo:.4f}", f"{hi:.4f}",
-                         n_acks, n_traced, _fmt(t_acc), _fmt(f_acc)])
+                         n_acks, n_traced, n_accepted, _fmt(t_acc), _fmt(f_acc)])
     _write_csv(results / "consistency.csv",
                ["arm", "contradiction_rate", "ci_lo", "ci_hi", "n_acks", "n_traced",
-                "true_accept_rate", "false_accept_rate"], con_rows)
+                "n_accepted_revisions", "true_accept_rate", "false_accept_rate"], con_rows)
 
     # --- assertions.csv + capability.csv (C4) ----------------------------------
     asr_rows, cap_rows = [], []
@@ -176,7 +189,7 @@ def main() -> int:
     # --- figures + RESULTS.md -------------------------------------------------------
     from plot import make_figures  # scripts/ sibling
     make_figures(results)
-    _write_results_md(results, meta, fid_rows, con_rows, asr_rows, oh_rows)
+    _write_results_md(results, meta, fid_rows, con_rows, asr_rows, oh_rows, auc_rows)
     print(f"done: {len(instances)} cases, {len(runs)} arm-runs, "
           f"{meta['wall_seconds']}s -> {results}")
     return 0
@@ -214,7 +227,7 @@ def _write_events(path: Path, case_events) -> None:
                 }) + "\n")
 
 
-def _write_results_md(results: Path, meta: dict, fid_rows, con_rows, asr_rows, oh_rows) -> None:
+def _write_results_md(results: Path, meta: dict, fid_rows, con_rows, asr_rows, oh_rows, auc_rows) -> None:
     fid = {(r[0], r[1]): float(r[2]) for r in fid_rows}
     con = {r[0]: float(r[1]) for r in con_rows}
     asr = {r[0]: float(r[1]) for r in asr_rows}
@@ -257,15 +270,26 @@ def _write_results_md(results: Path, meta: dict, fid_rows, con_rows, asr_rows, o
     for arm in FIDELITY_ARMS:
         lines.append(f"| {arm} | " + " | ".join(
             f"{fid[(arm, m)]:.3f}" for m in EXTRACTOR_MODES) + " |")
+    auc = {(r[0], r[1]): float(r[2]) for r in auc_rows}
+    lines += [
+        "",
+        "## Expression discrimination (Amendment 1) — AUC, 0.5 = chance",
+        "",
+        "| arm | combined | signal | consistency |",
+        "| --- | ---: | ---: | ---: |",
+    ]
+    for arm in FIDELITY_ARMS:
+        lines.append(f"| {arm} | " + " | ".join(
+            f"{auc[(arm, m)]:.3f}" for m in EXTRACTOR_MODES) + " |")
     lines += [
         "",
         "## Consistency & revision (C3)",
         "",
-        "| arm | contradiction rate | acks | traced | true-corr accept | false-corr accept |",
-        "| --- | ---: | ---: | ---: | ---: | ---: |",
+        "| arm | contradiction rate | acks | traced | accepted revs | true-corr accept | false-corr accept |",
+        "| --- | ---: | ---: | ---: | ---: | ---: | ---: |",
     ]
     for r in con_rows:
-        lines.append(f"| {r[0]} | {r[1]} | {r[4]} | {r[5]} | {r[6] or '—'} | {r[7] or '—'} |")
+        lines.append(f"| {r[0]} | {r[1]} | {r[4]} | {r[5]} | {r[6]} | {r[7] or '—'} | {r[8] or '—'} |")
     lines += [
         "",
         "## Assertions & capability (C4)",

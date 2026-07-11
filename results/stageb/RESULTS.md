@@ -14,7 +14,23 @@ Model: `Qwen/Qwen2.5-0.5B-Instruct` @ revision `7ae557604adf67be50417f59c2c2f167
 | C4 margin: no_provenance - full >= 0.02 | **FAIL** |
 | Capability equivalence (TOST +/-0.05, full vs uniform) | PASS |
 
-**C5 hand-off (manipulation check AND capability equivalence): **NOT delivered — the Paper-5 truth arm stays blocked**.**
+**C5 under the ORIGINAL frozen check: NOT delivered** (verdict stands, never relabeled).
+
+## Amendment 1 (disclosed post-hoc; see PROTOCOL.md) — expression-discrimination AUC
+
+| arm | combined | logit | consistency |
+| --- | ---: | ---: | ---: |
+| full | 0.653 | 0.410 | 0.661 |
+| uniform | 0.500 | 0.500 | 0.500 |
+| always_hedged | 0.500 | 0.500 | 0.500 |
+| threshold_only | 0.715 | 0.569 | 0.730 |
+
+| Amended check | Result |
+| --- | --- |
+| Amendment 1 (logit): full AUC >= 0.60 and >= controls + 0.05 | **FAIL** |
+| Amendment 1 (consistency): full AUC >= 0.60 and >= controls + 0.05 | PASS |
+
+**C5 under Amendment 1 (amended manipulation check AND capability equivalence): NOT delivered** — reported with the amendment's post-hoc disclosure; the original FAIL verdicts above remain in force as the pre-registered outcome.
 
 ## Expression fidelity (C2) — expression-ECE, lower is better
 
@@ -27,15 +43,15 @@ Model: `Qwen/Qwen2.5-0.5B-Instruct` @ revision `7ae557604adf67be50417f59c2c2f167
 
 ## Consistency & revision (C3)
 
-| arm | contradiction rate | acks | traced | true-corr accept | false-corr accept |
-| --- | ---: | ---: | ---: | ---: | ---: |
-| full | 0.0000 | 42 | 42 | 0.8750 | 0.4197 |
-| uniform | 0.0000 | 61 | 61 | 0.8649 | 0.4249 |
-| always_hedged | 0.0000 | 66 | 66 | 0.8718 | 0.4508 |
-| threshold_only | 0.0000 | 69 | 69 | 0.8673 | 0.4560 |
-| store_no_ack | 0.0000 | 0 | 0 | 0.8729 | 0.4560 |
-| no_provenance | 0.0000 | 57 | 57 | 0.8707 | 0.4301 |
-| stateless | 0.0286 | 0 | 0 | — | — |
+| arm | contradiction rate | acks | traced | accepted revs | true-corr accept | false-corr accept |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| full | 0.0000 | 42 | 42 | 197 | 0.8750 | 0.4197 |
+| uniform | 0.0000 | 61 | 61 | 195 | 0.8649 | 0.4249 |
+| always_hedged | 0.0000 | 66 | 66 | 200 | 0.8718 | 0.4508 |
+| threshold_only | 0.0000 | 69 | 69 | 203 | 0.8673 | 0.4560 |
+| store_no_ack | 0.0000 | 0 | 0 | 201 | 0.8729 | 0.4560 |
+| no_provenance | 0.0000 | 57 | 57 | 197 | 0.8707 | 0.4301 |
+| stateless | 0.0286 | 0 | 0 | 0 | — | — |
 
 ## Assertions & capability (C4)
 
@@ -55,8 +71,8 @@ Model: `Qwen/Qwen2.5-0.5B-Instruct` @ revision `7ae557604adf67be50417f59c2c2f167
 
 | config | median (ms) | lo | hi |
 | --- | ---: | ---: | ---: |
-| full_layer_machinery | 0.0769 | 0.0750 | 0.0797 |
-| cached_lookup_baseline | 0.0049 | 0.0048 | 0.0052 |
+| full_layer_machinery | 0.0792 | 0.0757 | 0.1045 |
+| cached_lookup_baseline | 0.0051 | 0.0050 | 0.0062 |
 | model_query_median_ms(one-time,from_cache_build) | 106.6 | — | — |
 
 ## Honesty notes (non-negotiable)
@@ -78,4 +94,4 @@ Model: `Qwen/Qwen2.5-0.5B-Instruct` @ revision `7ae557604adf67be50417f59c2c2f167
   are wall-clock medians + intervals. Per-query model latency is reported
   from the cache build, not per-turn.
 
-Full register: `run_meta.json` · protocol: `../../PROTOCOL.md` · wall 54.1s.
+Full register: `run_meta.json` · protocol: `../../PROTOCOL.md` · wall 78.6s.

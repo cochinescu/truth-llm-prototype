@@ -1,0 +1,13 @@
+arm,extractor_mode,auc,ci_lo,ci_hi
+full,combined,0.6298,0.5553,0.6952
+uniform,combined,0.5000,0.5000,0.5000
+always_hedged,combined,0.5000,0.5000,0.5000
+threshold_only,combined,0.5330,0.4538,0.6048
+full,signal,0.6375,0.5890,0.6979
+uniform,signal,0.5000,0.5000,0.5000
+always_hedged,signal,0.5000,0.5000,0.5000
+threshold_only,signal,0.5352,0.4673,0.5916
+full,consistency,0.5892,0.5377,0.6539
+uniform,consistency,0.5000,0.5000,0.5000
+always_hedged,consistency,0.5000,0.5000,0.5000
+threshold_only,consistency,0.5131,0.4585,0.5546

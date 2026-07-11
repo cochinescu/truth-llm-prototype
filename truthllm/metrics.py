@@ -57,6 +57,33 @@ def _ece_from_records(recs: list[tuple[str, bool]]) -> tuple[float, dict[str, tu
     return ece, bins
 
 
+_CAT_RANK = {"HEDGE_LOW": 1, "HEDGE_HIGH": 2, "ASSERT": 3}
+
+
+def expression_auc(case_events: CaseEvents, world: World) -> float:
+    """Amendment 1 (PROTOCOL): expression-discrimination AUC — the probability
+    that a uniformly drawn CORRECT expressed claim carries a strictly higher
+    expression category than an incorrect one (ties count 1/2). Any
+    single-category policy scores exactly 0.5 regardless of corpus accuracy,
+    which is what makes this degeneracy-proof where anchor-ECE is not.
+    DECLINEs remain excluded (no asserted content; counted in coverage)."""
+    recs = [r for rs in _fidelity_records(case_events, world).values() for r in rs]
+    correct = [_CAT_RANK[c] for c, ok in recs if ok]
+    incorrect = [_CAT_RANK[c] for c, ok in recs if not ok]
+    if not correct or not incorrect:
+        return float("nan")
+    from collections import Counter
+    ci = Counter(incorrect)
+    wins = ties = 0
+    for rc in correct:
+        for ri, n in ci.items():
+            if rc > ri:
+                wins += n
+            elif rc == ri:
+                ties += n
+    return (wins + 0.5 * ties) / (len(correct) * len(incorrect))
+
+
 # --- C3: consistency, acknowledgment, corrections -------------------------------
 
 def _contradictions(events: list[TurnEvent]) -> tuple[int, int]:
@@ -90,7 +117,8 @@ def contradiction_rate(case_events: CaseEvents) -> float:
 
 
 def ack_audit(case_events: CaseEvents) -> tuple[int, int]:
-    """(n_acknowledgments, n_traced_to_accepted_revision) — C3b requires equality."""
+    """(n_acknowledgments, n_traced_to_accepted_revision) — C3b soundness
+    direction: every utterance traces to an accepted revision."""
     n_acks = n_traced = 0
     for _, events in case_events:
         accepted = {(r.t, r.subject, r.attribute)
@@ -101,6 +129,19 @@ def ack_audit(case_events: CaseEvents) -> tuple[int, int]:
                 if ev.ack_key in accepted:
                     n_traced += 1
     return n_acks, n_traced
+
+
+def ack_completeness(case_events: CaseEvents) -> tuple[int, int]:
+    """(n_accepted_revisions, n_acknowledged_turns) — the reciprocal
+    direction: how many accepted state changes were verbally acknowledged.
+    Reported as a fraction, not asserted as 100%: store-maintenance inserts
+    that occur after the turn's expression are logged but not uttered."""
+    n_accepted = n_acked = 0
+    for _, events in case_events:
+        for ev in events:
+            n_accepted += sum(1 for r in ev.revision_events if r.accepted)
+            n_acked += bool(ev.acknowledged)
+    return n_accepted, n_acked
 
 
 def correction_scores(case_events: CaseEvents, labels: dict[str, list[dict]]) -> tuple[float, float]:

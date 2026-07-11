@@ -1,8 +1,8 @@
-arm,contradiction_rate,ci_lo,ci_hi,n_acks,n_traced,true_accept_rate,false_accept_rate
-full,0.0000,0.0000,0.0000,42,42,0.8750,0.4197
-uniform,0.0000,0.0000,0.0000,61,61,0.8649,0.4249
-always_hedged,0.0000,0.0000,0.0000,66,66,0.8718,0.4508
-threshold_only,0.0000,0.0000,0.0000,69,69,0.8673,0.4560
-store_no_ack,0.0000,0.0000,0.0000,0,0,0.8729,0.4560
-no_provenance,0.0000,0.0000,0.0000,57,57,0.8707,0.4301
-stateless,0.0286,0.0102,0.0506,0,0,,
+arm,contradiction_rate,ci_lo,ci_hi,n_acks,n_traced,n_accepted_revisions,true_accept_rate,false_accept_rate
+full,0.0000,0.0000,0.0000,42,42,197,0.8750,0.4197
+uniform,0.0000,0.0000,0.0000,61,61,195,0.8649,0.4249
+always_hedged,0.0000,0.0000,0.0000,66,66,200,0.8718,0.4508
+threshold_only,0.0000,0.0000,0.0000,69,69,203,0.8673,0.4560
+store_no_ack,0.0000,0.0000,0.0000,0,0,201,0.8729,0.4560
+no_provenance,0.0000,0.0000,0.0000,57,57,197,0.8707,0.4301
+stateless,0.0286,0.0102,0.0506,0,0,0,,
