@@ -1,8 +1,8 @@
-# Truth Prototype Results — Stage C (consistency-gated configuration, pre-registered pass)
+# Truth Prototype Results — Stage C (consistency-gated configuration, separately committed pass)
 
 Model: `Qwen/Qwen2.5-0.5B-Instruct` @ revision `7ae557604adf67be50417f59c2c2f167def9a775` on mps · greedy answers, k=8 consistency samples (T=1.0, top-p=0.95). Benchmark: benchmark/stageb-v1.0 (frozen, sha-verified, seed 20260713); 120 conversations/arm; cluster bootstrap n=2000 (unit = conversation). Master seed `20260711`.
 
-## Pre-registered margin verdicts (PROTOCOL.md, frozen before this grid)
+## Pre-specified margin verdicts (PROTOCOL.md)
 
 | Check | Result |
 | --- | --- |
@@ -11,7 +11,7 @@ Model: `Qwen/Qwen2.5-0.5B-Instruct` @ revision `7ae557604adf67be50417f59c2c2f167
 | C3 audit: 100% acknowledgment traceability | PASS |
 | C3 corrections: false-accept <= true-accept - 0.10 | PASS |
 | C4 margin: no_provenance - full >= 0.02 | **FAIL** |
-| Capability equivalence (TOST +/-0.05, full vs uniform) | PASS |
+| Capability equivalence (95% CI within +/-0.05, full vs uniform) | PASS |
 
 **C5 under the Stage-C freeze conditions (pre-verdict summary below)**
 
@@ -69,12 +69,12 @@ Model: `Qwen/Qwen2.5-0.5B-Instruct` @ revision `7ae557604adf67be50417f59c2c2f167
 | cached_lookup_baseline | 0.0049 | 0.0048 | 0.0051 |
 | model_query_median_ms(one-time,from_cache_build) | 106.6 | — | — |
 
-## Honesty notes (non-negotiable)
+## Scope and interpretation notes
 
 - **Stage-C numbers under the pre-committed Stage-C freeze** (see the
   PROTOCOL.md disclosure chain); Stage-A/B verdicts stand unchanged.
   One pinned 0.5B model, one machine; the extractor choice is the
-  configuration's pre-registered design decision, not outcome-shopping.
+  configuration's pre-committed design decision.
 - The world is a 60-fact real-geography table chosen for unambiguity; the
   model's error pattern is its own (no injected corruption). Provenance
   tags remain pipeline instrumentation; benchmark contradictions and

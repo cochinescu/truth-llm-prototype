@@ -256,7 +256,7 @@ def _write_results_md(results: Path, meta: dict, fid_rows, con_rows, asr_rows, o
         f"{meta['n_cases']} conversations per arm; cluster bootstrap n={meta['bootstrap_n']} "
         f"(unit = conversation).",
         "",
-        "## Instrument-validation checks (pre-registered in the build plan)",
+        "## Instrument-validation checks (pre-specified in the build plan)",
         "",
         "| Check | Result |",
         "| --- | --- |",
@@ -312,7 +312,7 @@ def _write_results_md(results: Path, meta: dict, fid_rows, con_rows, asr_rows, o
         lines.append(f"| {r[0]} | {r[1]} | {r[2] or '—'} | {r[3] or '—'} |")
     lines += [
         "",
-        "## Honesty notes (non-negotiable)",
+        "## Scope and interpretation notes",
         "",
         "- **Stage A validates the instrument, not the paper's claims.** The base",
         "  model is an LLM-free synthetic stub with knowable corruption; these",

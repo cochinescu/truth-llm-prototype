@@ -1,6 +1,6 @@
 """PROTOCOL.md constants as code.
 
-This file is the single code source for every pre-registered value; PROTOCOL.md
+This file is the single code source for every pre-specified value; PROTOCOL.md
 is the human-readable register. A divergence between the two is a defect.
 Status tags mirror PROTOCOL.md: FROZEN / PROVISIONAL / TBD (Stage B).
 """

@@ -206,7 +206,7 @@ def overhead_ms(fn: Callable[[], object], iters: int = protocol.OVERHEAD_ITERS) 
     return float(np.median(arr)), float(arr[lo]), float(arr[hi])
 
 
-# --- Capability equivalence (TOST-style, PROTOCOL Stage-B) -------------------------
+# --- Capability-equivalence CI (PROTOCOL Stage-B) ----------------------------------
 
 def paired_difference_ci(
     case_events_a: CaseEvents,

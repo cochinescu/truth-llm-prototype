@@ -1,7 +1,10 @@
 """Stage-B components that need no model download: the real-fact world and
 the answer normalization/snapping layer."""
 
-from truthllm.llm_model import normalize, snap
+import json
+from pathlib import Path
+
+from truthllm.llm_model import MODEL_ID, MODEL_REVISION, normalize, snap
 from truthllm.worldb import CAPITALS, CONTINENT_OF_CAPITAL, FACTS, WorldB
 
 
@@ -45,3 +48,10 @@ def test_retrieval_docs_partial_and_stale():
     assert 0 < len(docs) < 60
     stale = sum(v != w.facts[k] for k, v in docs.items())
     assert 0 <= stale < len(docs)
+
+
+def test_committed_model_cache_matches_pin():
+    cache_path = Path(__file__).parents[1] / "results" / "stageb" / "model_cache.json"
+    meta = json.loads(cache_path.read_text())["meta"]
+    assert meta["model_id"] == MODEL_ID
+    assert meta["revision"] == MODEL_REVISION

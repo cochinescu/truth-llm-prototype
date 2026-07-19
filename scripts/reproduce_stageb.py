@@ -172,7 +172,7 @@ def main() -> int:
                ["arm", "answer_accuracy", "acc_ci_lo", "acc_ci_hi",
                 "coverage", "cov_ci_lo", "cov_ci_hi"], cap_rows)
 
-    # capability equivalence (TOST-style, full vs uniform, paired)
+    # capability-equivalence CI criterion (full vs uniform, paired)
     d_est, d_lo, d_hi = paired_difference_ci(
         runs[("full", primary)], runs[("uniform", primary)],
         lambda c: assertion_rates(c, world)["answer_accuracy"],
@@ -205,7 +205,7 @@ def main() -> int:
     for arm in ARM_ORDER:
         _write_events(results / "events" / f"{arm}.jsonl", runs[(arm, primary)])
 
-    # --- margin verdicts (pre-registered) --------------------------------------
+    # --- margin verdicts (pre-specified) ---------------------------------------
     fid = {(r[0], r[1]): float(r[2]) for r in fid_rows}
     con = {r[0]: float(r[1]) for r in con_rows}
     asr = {r[0]: float(r[1]) for r in asr_rows}
@@ -226,7 +226,7 @@ def main() -> int:
                  for a, (t, f) in corr.items() if t and f)),
             ("C4 margin: no_provenance - full >= 0.02",
              asr["no_provenance"] - asr["full"] >= MARGIN_C4),
-            ("Capability equivalence (TOST +/-0.05, full vs uniform)", equivalent),
+            ("Capability equivalence (95% CI within +/-0.05, full vs uniform)", equivalent),
         ]
         c5_delivered = checks[0][1] and equivalent
         amended_checks = []
@@ -248,7 +248,7 @@ def main() -> int:
                  for a, (t, f) in corr.items() if t and f)),
             ("C4 margin: no_provenance - full >= 0.02",
              asr["no_provenance"] - asr["full"] >= MARGIN_C4),
-            ("Capability equivalence (TOST +/-0.05, full vs uniform)", equivalent),
+            ("Capability equivalence (95% CI within +/-0.05, full vs uniform)", equivalent),
         ]
         c5_delivered = checks[0][1] and checks[1][1] and equivalent
         # Amendment 1 verdicts (original verdicts above remain untouched)
@@ -332,7 +332,7 @@ def _write_results_md(results, meta, checks, c5, fid_rows, con_rows, asr_rows,
     fid = {(r[0], r[1]): float(r[2]) for r in fid_rows}
     lines = [
         ("# Truth Prototype Results — Stage C (consistency-gated configuration, "
-         "pre-registered pass)" if stage == "c" else
+         "separately committed pass)" if stage == "c" else
          "# Truth Prototype Results — Stage B (pinned real model, final grid)"),
         "",
         f"Model: `{meta['model'].get('model_id')}` @ revision "
@@ -344,7 +344,7 @@ def _write_results_md(results, meta, checks, c5, fid_rows, con_rows, asr_rows,
         f"Master seed `{meta['master_seed']}`"
         f"{' (QUICK)' if meta['quick'] else ''}.",
         "",
-        "## Pre-registered margin verdicts (PROTOCOL.md, frozen before this grid)",
+        "## Pre-specified margin verdicts (PROTOCOL.md)",
         "",
         "| Check | Result |",
         "| --- | --- |",
@@ -375,7 +375,7 @@ def _write_results_md(results, meta, checks, c5, fid_rows, con_rows, asr_rows,
             f"**C5 under Amendment 1 (amended manipulation check AND capability "
             f"equivalence): {'DELIVERED' if c5_amended else 'NOT delivered'}** — "
             f"reported with the amendment's post-hoc disclosure; the original FAIL "
-            f"verdicts above remain in force as the pre-registered outcome.",
+            f"verdicts above remain in force as the pre-specified outcome.",
         ]
     else:
         lines += [
@@ -419,7 +419,7 @@ def _write_results_md(results, meta, checks, c5, fid_rows, con_rows, asr_rows,
         lines.append(f"| {r[0]} | {r[1]} | {r[2] or '—'} | {r[3] or '—'} |")
     lines += [
         "",
-        "## Honesty notes (non-negotiable)",
+        "## Scope and interpretation notes",
         "",
         ("- **Stage-C numbers under the pre-committed Stage-C freeze** (see the"
          if stage == "c" else
@@ -430,7 +430,7 @@ def _write_results_md(results, meta, checks, c5, fid_rows, con_rows, asr_rows,
         ("  One pinned 0.5B model, one machine; the extractor choice is the"
          if stage == "c" else
          "  to this model class; no second model was run (R6)."),
-        ("  configuration's pre-registered design decision, not outcome-shopping."
+        ("  configuration's pre-committed design decision."
          if stage == "c" else ""),
         "- The world is a 60-fact real-geography table chosen for unambiguity; the",
         "  model's error pattern is its own (no injected corruption). Provenance",

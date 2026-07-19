@@ -1,4 +1,4 @@
-"""End-to-end: one-command seeded regeneration + the pre-registered
+"""End-to-end: one-command seeded regeneration + the pre-specified
 directional acceptance criteria (build plan §4) + the scorer parity check."""
 
 import json

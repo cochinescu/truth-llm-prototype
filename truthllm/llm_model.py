@@ -26,6 +26,7 @@ from .basemodel import Answer
 from .worldb import CAPITALS
 
 MODEL_ID = "Qwen/Qwen2.5-0.5B-Instruct"  # PROTOCOL: FROZEN for the Stage-B grid
+MODEL_REVISION = "7ae557604adf67be50417f59c2c2f167def9a775"
 K_SAMPLES_B = 8          # PROTOCOL: revised from Stage-A 15 (compute), frozen
 SAMPLE_TEMPERATURE = 1.0
 SAMPLE_TOP_P = 0.95
@@ -72,6 +73,15 @@ class LLMBaseModel:
         if cache_path is not None and cache_path.exists():
             data = json.loads(cache_path.read_text())
             self.cache, self.meta = data["cache"], data["meta"]
+            if self.meta.get("model_id") != MODEL_ID:
+                raise ValueError(
+                    f"cache model mismatch: {self.meta.get('model_id')!r} != {MODEL_ID!r}"
+                )
+            if self.meta.get("revision") != MODEL_REVISION:
+                raise ValueError(
+                    "cache revision mismatch: "
+                    f"{self.meta.get('revision')!r} != {MODEL_REVISION!r}"
+                )
             return
         self._build_cache(device)
         if cache_path is not None:
@@ -84,10 +94,14 @@ class LLMBaseModel:
         from transformers import AutoModelForCausalLM, AutoTokenizer
 
         device = device or ("mps" if torch.backends.mps.is_available() else "cpu")
-        tok = AutoTokenizer.from_pretrained(MODEL_ID)
-        model = AutoModelForCausalLM.from_pretrained(MODEL_ID, dtype=torch.float32)
+        tok = AutoTokenizer.from_pretrained(MODEL_ID, revision=MODEL_REVISION)
+        model = AutoModelForCausalLM.from_pretrained(
+            MODEL_ID, revision=MODEL_REVISION, dtype=torch.float32
+        )
         model.to(device).eval()
-        revision = getattr(model.config, "_commit_hash", None) or "unpinned"
+        revision = getattr(model.config, "_commit_hash", None) or MODEL_REVISION
+        if revision != MODEL_REVISION:
+            raise RuntimeError(f"loaded revision {revision!r}, expected {MODEL_REVISION!r}")
         torch.manual_seed(self.seed)
 
         latencies = []

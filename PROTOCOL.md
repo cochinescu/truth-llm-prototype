@@ -1,4 +1,12 @@
-# PROTOCOL.md — pre-registration for the truth paper's evaluation
+# PROTOCOL.md — version-controlled protocol for the truth paper's evaluation
+
+This file is an author-maintained protocol, not an independently registered
+preregistration. For Stage B, the freeze and result files first entered the
+repository history in the same commit; their claimed ordering therefore rests
+on the author's working-tree record. Stage-C and robustness-draw freezes were
+committed separately before their corresponding runs. The manuscript uses
+"pre-specified" for Stage B and reserves "pre-committed" for those later,
+separately committed freezes.
 
 Status legend (inherited from Paper 2): **FROZEN** = fixed now, changing it later
 is a protocol violation to be reported in the paper; **PROVISIONAL** = value used
@@ -65,14 +73,14 @@ errors out on mismatch.
 | bootstrap | PROVISIONAL | 2000 resamples, seed master+999 |
 | master seed (Stage A) | FROZEN | 20260711; component seeds world=+0, benchmark=+1, arm i=+100+i, bootstrap=+999 |
 | C2/C3/C4 margins (Stage B) | TBD | set from the pinned model's pilot, before the final grid |
-| capability equivalence (TOST) margins | TBD | Stage B only; Stage A reports accuracy + coverage descriptively |
+| capability-equivalence CI margin | TBD | Stage B only; Stage A reports accuracy + coverage descriptively |
 | overhead measurement | FROZEN (method) | median + 95% CI over ≥200 iterations; Stage-A number is layer-over-stub cost only |
 
 ## Stage-B freeze pass (2026-07-11 — recorded BEFORE the Stage-B grid ran)
 
 | item | status | value |
 |---|---|---|
-| base model | FROZEN | `Qwen/Qwen2.5-0.5B-Instruct` (HF); revision hash recorded in `results/stageb/model_cache.json` meta at load; single model (R6 scoped: no second model this pass) |
+| base model | FROZEN | `Qwen/Qwen2.5-0.5B-Instruct` (HF), revision `7ae557604adf67be50417f59c2c2f167def9a775`; loader and cache both enforce the revision; single model (R6 scoped: no second model this pass) |
 | decoding | FROZEN | greedy for answers, max 12 new tokens; system prompt fixes "name only / say unknown" |
 | extractors (Stage B) | FROZEN | `logit` = mean token probability of the generated answer; `consistency` = agreement of k temperature samples (T=1.0, top-p 0.95) with the greedy answer; combination rule stays min (D1) |
 | k samples | FROZEN | 8 — **revision note:** Stage-A PROVISIONAL was 15; reduced for compute before the grid, per the legend |
@@ -83,7 +91,7 @@ errors out on mismatch.
 | C2 margin | FROZEN | ECE_full ≤ ECE_control − 0.02 for BOTH controls (uniform, always-hedged) under BOTH extractors |
 | C3 margin | FROZEN | contradiction(stateless) − contradiction(each store arm) ≥ 0.03; ack audit = 100%; false-accept ≤ true-accept − 0.10 |
 | C4 margin | FROZEN | confidently-false(no_provenance) − confidently-false(full) ≥ 0.02; coverage cost reported |
-| capability equivalence | FROZEN | TOST-style: 95% cluster-bootstrap CI of per-conversation Δ(answer-when-given accuracy, full − uniform) within ±0.05 → equivalent; coverage reported separately (never folded into the equivalence test) |
+| capability equivalence | FROZEN | CI-inclusion criterion: 95% cluster-bootstrap CI of per-conversation Δ(answer-when-given accuracy, full − uniform) within ±0.05 → equivalent; this is not a formal two one-sided test; coverage reported separately |
 | Stage-A PROVISIONAL values | FROZEN as-is | bands 0.40/0.75; floor 0.15; θ_accept 0.75; CORRECTION/TOLD/RETRIEVED conf 0.85/0.60/0.80; benchmark shape/mix; retrieval 0.5/0.1/0.5 — no revisions needed after Stage A |
 | model cache | FROZEN (mechanism) | per-fact answers/confidences computed once, written to `results/stageb/model_cache.json`; the grid reads only the cache (rerun determinism) |
 
@@ -134,7 +142,7 @@ Stage B in every respect (same pinned model + cache, same frozen
 N=120) except that ALL arms run with the consistency extractor as the sole
 confidence source (`extractor_mode="consistency"`). This is the path forward
 identified by Stage B's extractor-dependence finding and named in the paper as
-requiring its own pre-registered pass.
+requiring its own separately committed pass.
 
 **Disclosure of prior knowledge (FROZEN — read before the verdicts):**
 - KNOWN before this freeze, from Stage B's per-extractor robustness runs
@@ -154,7 +162,7 @@ requiring its own pre-registered pass.
 
 | item | status | value |
 |---|---|---|
-| manipulation check (Stage C) | FROZEN | AUC(full, consistency) ≥ 0.60 AND ≥ each control + 0.05. The per-extractor robustness clause of Amendment 1 does not apply: the extractor choice IS the pre-registered design decision of this configuration, justified by Stage B's mechanism finding, not by outcome-shopping |
+| manipulation check (Stage C) | FROZEN | AUC(full, consistency) ≥ 0.60 AND ≥ each control + 0.05. The per-extractor robustness clause of Amendment 1 does not apply: the extractor choice is the pre-committed design decision of this configuration, justified by Stage B's mechanism finding |
 | C3 / corrections / C4 margins | FROZEN | identical to Stage B (0.03 / 0.10 / 0.02) for comparability; outcomes unknown |
 | capability equivalence | FROZEN | paired cluster-bootstrap CI of Δ answer-when-given accuracy (full − uniform) within ±0.05; unknown at freeze |
 | C5 delivery (Stage C) | FROZEN | delivered IFF manipulation check AND equivalence pass, reported "under the Stage-C freeze" with this disclosure chain cited; no relabeling of Stage-B verdicts |

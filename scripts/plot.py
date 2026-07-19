@@ -69,7 +69,7 @@ def _fig2_consistency(results: Path, label: str) -> None:
     err_hi = [max(0.0, float(r["ci_hi"]) - v) for v, r in zip(vals, rows)]
     ax.bar(arms, vals, yerr=[err_lo, err_hi], capsize=3,
            color=[ARM_COLORS[a] for a in arms])
-    ax.set_ylabel("self-contradiction rate (unacknowledged REASK flips)")
+    ax.set_ylabel("unacknowledged self-contradiction rate")
     ax.set_title(f"Revision & consistency (C3) — {label}; store arms vs stateless")
     ax.tick_params(axis="x", rotation=30)
     fig.tight_layout()

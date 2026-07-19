@@ -7,10 +7,11 @@ name = "truthllm-prototype"
 version = "0.1.0"
 description = "Stage-A synthetic reference implementation of the truth expression-and-revision layer (Paper 3)"
 requires-python = ">=3.11"
-dependencies = ["numpy>=2.0", "matplotlib>=3.9"]
+dependencies = ["numpy==2.5.1", "matplotlib==3.11.0"]
 
 [project.optional-dependencies]
-dev = ["pytest>=8"]
+dev = ["pytest==9.1.1"]
+stageb = ["torch==2.13.0", "transformers==5.13.0"]
 
 # Explicit package discovery: the flat layout has non-package data dirs
 # (results/, benchmark/) that setuptools auto-discovery would otherwise treat

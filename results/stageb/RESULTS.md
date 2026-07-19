@@ -2,7 +2,7 @@
 
 Model: `Qwen/Qwen2.5-0.5B-Instruct` @ revision `7ae557604adf67be50417f59c2c2f167def9a775` on mps · greedy answers, k=8 consistency samples (T=1.0, top-p=0.95). Benchmark: benchmark/stageb-v1.0 (frozen, sha-verified, seed 20260713); 120 conversations/arm; cluster bootstrap n=2000 (unit = conversation). Master seed `20260711`.
 
-## Pre-registered margin verdicts (PROTOCOL.md, frozen before this grid)
+## Pre-specified margin verdicts (PROTOCOL.md)
 
 | Check | Result |
 | --- | --- |
@@ -12,7 +12,7 @@ Model: `Qwen/Qwen2.5-0.5B-Instruct` @ revision `7ae557604adf67be50417f59c2c2f167
 | C3 audit: 100% acknowledgment traceability | PASS |
 | C3 corrections: false-accept <= true-accept - 0.10 | PASS |
 | C4 margin: no_provenance - full >= 0.02 | **FAIL** |
-| Capability equivalence (TOST +/-0.05, full vs uniform) | PASS |
+| Capability equivalence (95% CI within +/-0.05, full vs uniform) | PASS |
 
 **C5 under the ORIGINAL frozen check: NOT delivered** (verdict stands, never relabeled).
 
@@ -30,7 +30,7 @@ Model: `Qwen/Qwen2.5-0.5B-Instruct` @ revision `7ae557604adf67be50417f59c2c2f167
 | Amendment 1 (logit): full AUC >= 0.60 and >= controls + 0.05 | **FAIL** |
 | Amendment 1 (consistency): full AUC >= 0.60 and >= controls + 0.05 | PASS |
 
-**C5 under Amendment 1 (amended manipulation check AND capability equivalence): NOT delivered** — reported with the amendment's post-hoc disclosure; the original FAIL verdicts above remain in force as the pre-registered outcome.
+**C5 under Amendment 1 (amended manipulation check AND capability equivalence): NOT delivered** — reported with the amendment's post-hoc disclosure; the original FAIL verdicts above remain in force as the pre-specified outcome.
 
 ## Expression fidelity (C2) — expression-ECE, lower is better
 
@@ -75,7 +75,7 @@ Model: `Qwen/Qwen2.5-0.5B-Instruct` @ revision `7ae557604adf67be50417f59c2c2f167
 | cached_lookup_baseline | 0.0051 | 0.0050 | 0.0062 |
 | model_query_median_ms(one-time,from_cache_build) | 106.6 | — | — |
 
-## Honesty notes (non-negotiable)
+## Scope and interpretation notes
 
 - **These are the paper's headline numbers** (Stage A validated the
   instrument only). One pinned 0.5B model, one machine — claims are scoped

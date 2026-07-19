@@ -1,6 +1,6 @@
 """Fact-clustered (subject-level) sensitivity analysis for the Stage-C gates.
 
-Review finding (final round): the pre-registered statistical unit is the
+The pre-specified statistical unit is the
 conversation, but per-fact model caching makes observations dependent at the
 fact level — 120 conversations recycle the same 60 cached facts. This script
 recomputes the two delivery gates (manipulation AUC; capability-equivalence
