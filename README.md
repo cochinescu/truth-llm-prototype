@@ -1,7 +1,12 @@
 # Truth prototype and evaluation
 
-This directory contains the implementation and all mechanically scored
-artifacts reported in [`../Truth_v1.tex`](../Truth_v1.tex). The system is an
+This repository contains the implementation and all mechanically scored
+artifacts reported in the paper "Truth for Believable AI: Expressed Doubt,
+Provenance, and Belief Revision as an Engineerable Stance" (Sebastian
+Cochinescu, University of Bucharest; the manuscript source is archived with
+the full project snapshot at
+[doi:10.5281/zenodo.21462986](https://doi.org/10.5281/zenodo.21462986)).
+The system is an
 expression-and-revision layer over a fixed base model: three epistemic states,
 per-claim confidence and provenance, provenance-aware expression rules, and a
 persistent belief store with logged revision and acknowledgment.
@@ -60,5 +65,8 @@ optional `stageb` dependencies documented in [`BUILD.md`](BUILD.md).
   revision-log entry. It is not a completeness claim for all stored revisions.
 
 See [`BUILD.md`](BUILD.md) for exact commands. The software is distributed
-under the repository's MIT license; citation metadata are in
-[`../CITATION.cff`](../CITATION.cff).
+under the MIT license ([`LICENSE`](LICENSE)); citation metadata are in
+[`CITATION.cff`](CITATION.cff). The benchmark is also archived as an
+independently citable dataset at
+[doi:10.5281/zenodo.21462988](https://doi.org/10.5281/zenodo.21462988)
+(CC BY 4.0).

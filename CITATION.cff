@@ -1,0 +1,27 @@
+cff-version: 1.2.0
+message: "If you use this implementation or benchmark, please cite this work."
+title: "truthllm: Expression-and-Revision Layer over a Fixed Language Model — Reference Implementation, Benchmark, and Results"
+type: software
+authors:
+  - family-names: Cochinescu
+    given-names: Sebastian
+    affiliation: University of Bucharest
+    orcid: "https://orcid.org/0009-0006-1436-4819"
+repository-code: "https://github.com/cochinescu/truth-llm-prototype"
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.21462986
+    description: "Archived project snapshot (v1.0)"
+  - type: doi
+    value: 10.5281/zenodo.21462988
+    description: "Independently citable benchmark dataset (v1.0)"
+version: 1.0.0
+date-released: "2026-07-21"
+license: MIT
+preferred-citation:
+  type: unpublished
+  title: "Truth for Believable AI: Expressed Doubt, Provenance, and Belief Revision as an Engineerable Stance"
+  authors:
+    - family-names: Cochinescu
+      given-names: Sebastian
+  year: 2026
