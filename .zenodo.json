@@ -1,0 +1,32 @@
+{
+  "title": "truthllm: Expression-and-Revision Layer over a Fixed Language Model — Reference Implementation, Benchmark, and Results",
+  "upload_type": "software",
+  "description": "Reference implementation and measured evaluation accompanying the paper 'Truth for Believable AI: Expressed Doubt, Provenance, and Belief Revision as an Engineerable Stance'. Includes the truthllm layer (three epistemic states, per-claim confidence and typed provenance, a frozen provenance-gating table, a persistent belief store with defined revision triggers, a correction-acceptance rule with false-correction resistance, and auditable acknowledgments), a versioned multi-session contradiction-and-correction benchmark with SHA-256 manifests and a language-agnostic scorer, cached pinned-model outputs (Qwen2.5-0.5B-Instruct at a recorded revision), seed-reproducible one-command evaluation scripts, all results files behind every number in the paper, and the test suite. Honesty notes: all outcomes are machine-scored against generator-injected ground truth on one 60-fact world and one 0.5B model; several pre-specified margins fail and are reported as failures; no believability, trust, or human-perception effect is measured.",
+  "creators": [
+    {
+      "name": "Cochinescu, Sebastian",
+      "affiliation": "University of Bucharest",
+      "orcid": "0009-0006-1436-4819"
+    }
+  ],
+  "license": "MIT",
+  "access_right": "open",
+  "related_identifiers": [
+    {
+      "identifier": "10.5281/zenodo.21462988",
+      "relation": "isSupplementedBy",
+      "scheme": "doi",
+      "resource_type": "dataset"
+    }
+  ],
+  "keywords": [
+    "uncertainty expression",
+    "belief revision",
+    "provenance",
+    "epistemic state",
+    "conversational agents",
+    "abstention",
+    "hallucination",
+    "language models"
+  ]
+}

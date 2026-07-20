@@ -14,11 +14,9 @@ by the Stage-A synthetic validation run, to be frozen (possibly revised, with th
 revision noted here) BEFORE the Stage-B real-base-model final grid; **TBD** = must
 be set before the final grid, no value committed yet.
 
-The plan (`../planning-docs/2026-07-11-truth-paper3-plan.md`) defines what each
-item is for; the build plan
-(`../planning-docs/2026-07-11-truth-prototype-build-plan.md`) defines the modules.
 Constants are mirrored in `truthllm/protocol.py` — that file is the single code
-source; a divergence between it and this document is a defect.
+source; a divergence between it and this document is a defect. The module map
+and reproduction commands are documented in `README.md` and `BUILD.md`.
 
 Hash-freeze rule (FROZEN): once `benchmark/v1.0/` is frozen, its `MANIFEST.json`
 records SHA-256 of instances and labels; `scripts/reproduce.py` verifies and
