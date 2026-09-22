@@ -26,6 +26,8 @@ Model: `Qwen/Qwen2.5-0.5B-Instruct` @ revision `7ae557604adf67be50417f59c2c2f167
 
 **C5 under the Stage-C freeze (manipulation check AND capability equivalence): DELIVERED** — evaluated per the pre-committed Stage-C freeze (PROTOCOL.md), whose prior-knowledge disclosure applies: the manipulation-check value was expected from Stage B; the equivalence outcome was unknown at freeze.
 
+Scope of this verdict: it holds under the frozen conversation-level analysis (unit = conversation). Under fact-level (subject) clustering both gates are unresolved at 60 facts: the manipulation-AUC interval includes chance and the equivalence interval exceeds the +0.05 bound (`results/stagec/sensitivity_fact_cluster.csv`, a disclosed post hoc sensitivity analysis produced by `scripts/sensitivity_fact_cluster.py`). The frozen verdict is not relabeled; the hand-off is not ready for a human study until the fact base is expanded.
+
 ## Expression fidelity (C2) — expression-ECE, lower is better
 
 | arm | consistency |

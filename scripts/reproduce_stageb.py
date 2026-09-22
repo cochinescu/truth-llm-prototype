@@ -324,6 +324,18 @@ def _write_events(path, case_events):
                 }) + "\n")
 
 
+CAVEAT_C5_SCOPE = (
+    "Scope of this verdict: it holds under the frozen conversation-level analysis "
+    "(unit = conversation). Under fact-level (subject) clustering both gates are "
+    "unresolved at 60 facts: the manipulation-AUC interval includes chance and the "
+    "equivalence interval exceeds the +0.05 bound "
+    "(`results/stagec/sensitivity_fact_cluster.csv`, a disclosed post hoc "
+    "sensitivity analysis produced by `scripts/sensitivity_fact_cluster.py`). "
+    "The frozen verdict is not relabeled; the hand-off is not ready for a human "
+    "study until the fact base is expanded."
+)
+
+
 def _write_results_md(results, meta, checks, c5, fid_rows, con_rows, asr_rows,
                       oh_rows, equiv, auc_rows, amended_checks, c5_amended,
                       stage="b", modes=None):
@@ -385,6 +397,8 @@ def _write_results_md(results, meta, checks, c5, fid_rows, con_rows, asr_rows,
             f"evaluated per the pre-committed Stage-C freeze (PROTOCOL.md), whose "
             f"prior-knowledge disclosure applies: the manipulation-check value was "
             f"expected from Stage B; the equivalence outcome was unknown at freeze.",
+            "",
+            CAVEAT_C5_SCOPE,
         ]
     lines += [
         "",
