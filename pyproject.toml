@@ -5,8 +5,8 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "truthllm-prototype"
 version = "0.1.0"
-description = "Stage-A synthetic reference implementation of the truth expression-and-revision layer (Paper 3)"
-requires-python = ">=3.11"
+description = "Reference implementation of the truth expression-and-revision layer (Paper 3): synthetic Stage A and real-model Stages B/C"
+requires-python = ">=3.12"
 dependencies = ["numpy==2.5.1", "matplotlib==3.11.0"]
 
 [project.optional-dependencies]

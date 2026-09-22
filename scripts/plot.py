@@ -97,7 +97,8 @@ def _fig3_assertions(results: Path, label: str) -> None:
     axes[1].set_xticks(list(x))
     axes[1].set_xticklabels(arms, rotation=30)
     axes[1].set_title("the trade is reported: coverage vs accuracy")
-    axes[1].legend(fontsize=8)
+    axes[1].set_ylim(0, 1.18)  # headroom so the legend sits above the bars
+    axes[1].legend(fontsize=8, loc="upper center", ncol=2, frameon=False)
     fig.suptitle(f"Provenance gating (C4) — {label}")
     fig.tight_layout()
     fig.savefig(results / "fig3_assertions.png", dpi=150)

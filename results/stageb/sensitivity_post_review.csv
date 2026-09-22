@@ -1,0 +1,42 @@
+stage,block,quantity,value,denominator_or_ci,note
+retrieval_store,realized,subjects_covered,34,60,
+retrieval_store,realized,stale_entries,1,34,
+stageb,corrections,scorer_true_accept_rate,0.8750,,
+stageb,corrections,scorer_false_accept_rate,0.4197,,
+stageb,corrections,true_unheld_accepted,93,93,1.0000
+stageb,corrections,true_held_accepted,12,27,0.4444
+stageb,corrections,true_agreeing_dropped,109,,
+stageb,corrections,false_unheld_accepted,62,62,1.0000
+stageb,corrections,false_held_accepted,19,131,0.1450
+stageb,corrections,false_agreeing_dropped,0,,
+stageb,corrections,held_gap_true_minus_false,0.2994,"[0.0882, 0.5352]","fact-clustered 95% CI, 53 subjects"
+stageb,accepted_revisions,RETRIEVAL_CONFLICT_held,11,,
+stageb,accepted_revisions,USER_CORRECTION_held,31,,
+stageb,accepted_revisions,USER_CORRECTION_unheld,155,,
+stageb,acknowledgments,rendered_admissions_on_correct_turns,31,,
+stageb,acknowledgments,flag_only_on_ask_turns,11,,
+stageb,acknowledgments,rendered_admissions_prior_value_never_uttered,10,31,
+stageb,hedge_high_by_provenance,INFERRED,609,,
+stageb,hedge_high_by_provenance,TOLD,51,,
+stageb,retrieved_by_category,ASSERT,133,,
+stagec,corrections,scorer_true_accept_rate,0.8707,,
+stagec,corrections,scorer_false_accept_rate,0.4352,,
+stagec,corrections,true_unheld_accepted,89,89,1.0000
+stagec,corrections,true_held_accepted,12,27,0.4444
+stagec,corrections,true_agreeing_dropped,113,,
+stagec,corrections,false_unheld_accepted,64,64,1.0000
+stagec,corrections,false_held_accepted,20,129,0.1550
+stagec,corrections,false_agreeing_dropped,0,,
+stagec,corrections,held_gap_true_minus_false,0.2894,"[0.0856, 0.5286]","fact-clustered 95% CI, 53 subjects"
+stagec,accepted_revisions,RETRIEVAL_CONFLICT_held,10,,
+stagec,accepted_revisions,USER_CORRECTION_held,32,,
+stagec,accepted_revisions,USER_CORRECTION_unheld,153,,
+stagec,acknowledgments,rendered_admissions_on_correct_turns,32,,
+stagec,acknowledgments,flag_only_on_ask_turns,10,,
+stagec,acknowledgments,rendered_admissions_prior_value_never_uttered,10,32,
+stagec,hedge_high_by_provenance,INFERRED,625,,
+stagec,hedge_high_by_provenance,TOLD,41,,
+stagec,retrieved_by_category,ASSERT,150,,
+stageb,discrimination,full_logit_auc,0.4101,"[0.3012, 0.5708]","fact-clustered 95% CI, 60 subjects"
+stageb,floor_redundancy,full_three_state_off_identical_events,True,,
+stageb,arm_seed_streams,full_vs_store_no_ack_ask_turn_output_differences,239,1869,

@@ -1,6 +1,6 @@
 # Build and reproduction instructions
 
-Run all commands from `prototype/`. Python 3.11 or later is required.
+Run all commands from `prototype/`. Python 3.12 or later is required (the pinned NumPy 2.5.1 declares `>=3.12`).
 
 ## Install
 
@@ -51,6 +51,10 @@ model pin and committed cache metadata.
 
 # Fact-clustered sensitivity analysis
 .venv/bin/python scripts/sensitivity_fact_cluster.py
+
+# Post hoc diagnostics behind the 2026-09 review (correction-path decomposition,
+# acknowledgment breakdown, fact-clustered held-gap and logit-AUC intervals)
+.venv/bin/python scripts/sensitivity_post_review.py
 ```
 
 Each grid writes CSV files, event logs, four figures, `RESULTS.md`, and
