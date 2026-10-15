@@ -17,6 +17,12 @@
       "relation": "isSupplementedBy",
       "scheme": "doi",
       "resource_type": "dataset"
+    },
+    {
+      "identifier": "10.48550/arXiv.2609.26035",
+      "relation": "isSupplementTo",
+      "scheme": "doi",
+      "resource_type": "publication-preprint"
     }
   ],
   "keywords": [

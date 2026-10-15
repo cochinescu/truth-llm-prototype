@@ -19,9 +19,16 @@ version: 1.0.0
 date-released: "2026-07-21"
 license: MIT
 preferred-citation:
-  type: unpublished
+  type: article
   title: "Truth for Believable AI: Expressed Doubt, Provenance, and Belief Revision as an Engineerable Stance"
   authors:
     - family-names: Cochinescu
       given-names: Sebastian
   year: 2026
+  doi: 10.48550/arXiv.2609.26035
+  url: "https://arxiv.org/abs/2609.26035"
+  identifiers:
+    - type: other
+      value: "arXiv:2609.26035"
+      description: "arXiv preprint, cs.CL (v1, 2026-09-22)"
+  notes: "arXiv preprint. Paper 3 of the Perceived AGI series; companion framework paper arXiv:2607.15883."
